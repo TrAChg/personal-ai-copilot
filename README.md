@@ -11,14 +11,13 @@
 [![Mypy Strict](https://img.shields.io/badge/Mypy-Strict-blue?style=for-the-badge)](https://mypy-lang.org/)
 [![Tests](https://img.shields.io/badge/Tests-100%25_Passed-success?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
 
-A production-grade, enterprise-architected Second Brain combining **ChromaDB HNSW Vector Storage**, **GraphRAG Adjacency Networks**, **RAPTOR Hierarchical Trees**, and an **Autonomous Engineering Lakehouse** for **Tran Chung**.
+A production-grade, enterprise-architected Second Brain combining **ChromaDB HNSW Vector Storage**, **GraphRAG Adjacency Networks**, **RAPTOR Hierarchical Trees**, and an **Autonomous Engineering Lakehouse**.
 
 ---
 
 ## 1. Architectural Highlights
 
-1. **Modern Dual-Mode React SPA (French Minimalist Aesthetics)**:
-   - **Design Tokens**: Strict French Navy (`#002654`), French Blue (`#0055A5`), and Crisp White (`#FFFFFF`) with sharp `border-radius: 0px !important;` geometry across all UI controls.
+1. **Modern Dual-Mode React SPA**:
    - **Tab 1: Knowledge Graph (GraphRAG)**: Interactive 2D canvas visualizing multi-hop conceptual relationships between architectures, algorithms, and models.
    - **Tab 2: Engineering Activity Lakehouse**: SQLite-backed activity timeline featuring an **interactive accordion breakdown** displaying the multi-subagent execution lifecycle (`CodeSubagent` → `TestSubagent` → `ReviewSubagent` → `WebAuditSubagent` → `GitDeploySubagent`).
    - **Tab 3: Technical Knowledge Chunks**: High-density knowledge cards featuring folder-level titles, click-to-expand full Markdown rendering, and ChromaDB vector indexing indicators.
