@@ -17,6 +17,10 @@ class KnowledgeChunk:
     is_latest: bool = True
     topic_key: str = ""
     entities: list[str] = field(default_factory=list)
+    raptor_parent_l1: str = ""
+    raptor_parent_l2: str = ""
+    child_count: int = 0
+    file_name: str = ""
 
 
 @dataclass

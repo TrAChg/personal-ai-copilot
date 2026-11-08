@@ -204,8 +204,9 @@ def scan_and_ingest_documents(
             section_chunk_ids: list[str] = []
 
             if len(sections) == 1:
-                # Standard single-chunk document
-                chunk_id = base_chunk_id
+                # Formula: <file_stem>_DOC01
+                chunk_id = f"{clean_stem.lower()}_DOC01"
+                l1_parent = f"RAPTOR-L1-{category.upper()}"
                 existing = next((c for c in rag.chunks if c.chunk_id == chunk_id), None)
                 if not (existing and existing.content == content):
                     chunk = KnowledgeChunk(
@@ -214,23 +215,27 @@ def scan_and_ingest_documents(
                         category=category,
                         content=content,
                         raptor_level=0,
+                        raptor_parent_l1=l1_parent,
+                        raptor_parent_l2="RAPTOR-L2-GLOBAL-ROOT",
+                        file_name=file_path.name,
                         created_date=datetime.date.today().isoformat(),
                         authority_rank=5,
                         is_latest=True,
                         topic_key=f"topic_{category.lower()}_{clean_stem.lower()}",
-                        entities=[category, "DOC_INBOX"],
+                        entities=[category, clean_stem.lower()],
                     )
                     rag.upsert_knowledge_note(chunk)
-                    rag.add_graph_edge("SECOND_BRAIN_ROOT", "INCLUDES", cat_node, chunk_id)
-                    rag.add_graph_edge(cat_node, "HAS_TOPIC", doc_node, chunk_id)
+                    # Real conceptual edges: Category defines Document topic
+                    rag.add_graph_edge(cat_node, "DEFINES_DOCUMENT", doc_node, chunk_id)
                     section_chunk_ids.append(chunk_id)
             else:
                 # Large document: multi-section chunking
-                rag.add_graph_edge("SECOND_BRAIN_ROOT", "INCLUDES", cat_node, base_chunk_id)
-                rag.add_graph_edge(cat_node, "HAS_TOPIC", doc_node, base_chunk_id)
+                rag.add_graph_edge(cat_node, "DEFINES_DOCUMENT", doc_node, f"{clean_stem.lower()}_DOC")
+                l1_parent = f"RAPTOR-L1-{category.upper()}"
 
                 for idx, (sec_title, sec_content) in enumerate(sections, start=1):
-                    sec_chunk_id = f"{base_chunk_id}-SEC{idx:02d}"
+                    # Formula: <file_stem>_SEC01
+                    sec_chunk_id = f"{clean_stem.lower()}_SEC{idx:02d}"
                     existing = next((c for c in rag.chunks if c.chunk_id == sec_chunk_id), None)
                     if existing and existing.content == sec_content:
                         continue
@@ -242,6 +247,9 @@ def scan_and_ingest_documents(
                         category=category,
                         content=sec_content,
                         raptor_level=0,
+                        raptor_parent_l1=l1_parent,
+                        raptor_parent_l2="RAPTOR-L2-GLOBAL-ROOT",
+                        file_name=file_path.name,
                         created_date=datetime.date.today().isoformat(),
                         authority_rank=5,
                         is_latest=True,
@@ -251,30 +259,6 @@ def scan_and_ingest_documents(
                     rag.upsert_knowledge_note(chunk)
                     rag.add_graph_edge(doc_node, "HAS_SECTION", sec_chunk_id, sec_chunk_id)
                     section_chunk_ids.append(sec_chunk_id)
-
-                # If document is large (>= 3 sections), generate/update a RAPTOR Level 1 summary
-                if len(sections) >= 3:
-                    raptor_id = f"RAPTOR-L1-{clean_stem}"
-                    section_titles_summary = ", ".join(f"Section {i}: {s[0]}" for i, s in enumerate(sections, start=1) if s[0])
-                    raptor_content = (
-                        f"RAPTOR Level-1 Abstractive Synthesis for [{title}]: "
-                        f"This comprehensive document covers {len(sections)} modular sections: {section_titles_summary}. "
-                        f"Contains {len(content):,} characters vectorized without truncation across ChromaDB HNSW leaf chunks."
-                    )
-                    raptor_chunk = KnowledgeChunk(
-                        chunk_id=raptor_id,
-                        title=f"[RAPTOR Level-1 Summary] {title}",
-                        category="raptor_summary",
-                        content=raptor_content,
-                        raptor_level=1,
-                        created_date=datetime.date.today().isoformat(),
-                        authority_rank=5,
-                        is_latest=True,
-                        topic_key=f"raptor_{clean_stem.lower()}",
-                        entities=[category, doc_node],
-                    )
-                    rag.upsert_knowledge_note(raptor_chunk)
-                    rag.add_graph_edge("RAPTOR-L2-SECOND-BRAIN", "SUMMARIZES_DOCUMENT", raptor_id, raptor_id)
 
             if section_chunk_ids:
                 try:
@@ -299,6 +283,111 @@ def scan_and_ingest_documents(
             pass
 
     return ingested_docs
+
+
+def synthesize_raptor_hierarchical_tree(rag: PersonalKnowledgeRAG) -> dict[str, Any]:
+    """
+    100% Automated RAPTOR multi-scale tree synthesis (L0 -> L1 -> L2):
+    1. Collects all Level 0 leaf chunks and groups them strictly by category (folder).
+    2. Ensures every leaf chunk points to raptor_parent_l1 = f"RAPTOR-L1-{category.upper()}"
+       and raptor_parent_l2 = "RAPTOR-L2-GLOBAL-ROOT".
+    3. For every category:
+       - If RAPTOR-L1-{CATEGORY} exists: preserves its high-quality synthesis and updates child_count.
+       - If RAPTOR-L1-{CATEGORY} is missing (e.g., brand-new folder created):
+         automatically synthesizes a 1-sentence domain synthesis from constituent leaf notes!
+    4. For Level 2 Global Root:
+       - Ensures RAPTOR-L2-GLOBAL-ROOT exists, named 'Architectural Knowledge Tree'.
+       - Updates child_count to reflect active L1 clusters.
+       - Updates 1-sentence roll-up summary to encompass all active engineering domains.
+    5. Persists the unified tree to knowledge_vault.json.
+    """
+    leaves_by_cat: dict[str, list[KnowledgeChunk]] = {}
+    for c in rag.chunks:
+        if (c.raptor_level or 0) == 0:
+            leaves_by_cat.setdefault(c.category, []).append(c)
+
+    active_l1_ids: set[str] = set()
+    today_iso = datetime.date.today().isoformat()
+
+    # 1. Update or create Level 1 clusters
+    for cat, leaves in leaves_by_cat.items():
+        clean_cat = re.sub(r"[^A-Za-z0-9_-]", "_", cat).upper()
+        l1_id = f"RAPTOR-L1-{clean_cat}"
+        active_l1_ids.add(l1_id)
+
+        # Update pointers on all child leaves
+        for leaf in leaves:
+            leaf.raptor_parent_l1 = l1_id
+            leaf.raptor_parent_l2 = "RAPTOR-L2-GLOBAL-ROOT"
+
+        # Check existing L1
+        existing_l1 = next((c for c in rag.chunks if c.chunk_id == l1_id and c.raptor_level == 1), None)
+
+        if existing_l1:
+            existing_l1.child_count = len(leaves)
+            # Ensure clean title without legacy prefixes
+            existing_l1.title = existing_l1.title.replace("[RAPTOR L1 Cluster] ", "").strip()
+        else:
+            # Auto-synthesize 1-sentence domain synthesis from leaf titles/concepts
+            topics = [l.title.split("»")[-1].replace(f"[{cat}]", "").strip() for l in leaves[:4]]
+            clean_topics = ", ".join([t for t in topics if t])
+            domain_name = cat.replace("_", " ").title()
+            synth_content = f"Comprehensive architectural foundation for {domain_name}, covering {clean_topics}."
+
+            clean_title = f"{domain_name} Systems"
+            new_l1 = KnowledgeChunk(
+                chunk_id=l1_id,
+                title=clean_title,
+                category=cat,
+                content=synth_content,
+                raptor_level=1,
+                raptor_parent_l2="RAPTOR-L2-GLOBAL-ROOT",
+                child_count=len(leaves),
+                created_date=today_iso,
+                authority_rank=5,
+                is_latest=True,
+                topic_key=f"raptor_l1_{clean_cat.lower()}",
+                entities=[cat],
+            )
+            rag.chunks.append(new_l1)
+
+    # 2. Prune obsolete L1 clusters with 0 leaves
+    rag.chunks = [
+        c for c in rag.chunks
+        if not (c.raptor_level == 1 and c.chunk_id not in active_l1_ids)
+    ]
+
+    # 3. Update or create Level 2 Global Root
+    l2_root = next((c for c in rag.chunks if c.raptor_level == 2), None)
+    active_domains = sorted([c.category.replace("_", " ").title() for c in rag.chunks if c.raptor_level == 1])
+    domain_list_str = ", ".join(active_domains)
+    l2_content = f"Unified hierarchical architecture across {domain_list_str}."
+
+    if l2_root:
+        l2_root.title = "Architectural Knowledge Tree"
+        l2_root.content = l2_content
+        l2_root.child_count = len(active_l1_ids)
+    else:
+        l2_root = KnowledgeChunk(
+            chunk_id="RAPTOR-L2-GLOBAL-ROOT",
+            title="Architectural Knowledge Tree",
+            category="GLOBAL_ARCHITECTURE",
+            content=l2_content,
+            raptor_level=2,
+            child_count=len(active_l1_ids),
+            created_date=today_iso,
+            authority_rank=5,
+            is_latest=True,
+            topic_key="raptor_l2_root",
+            entities=["GLOBAL_ARCHITECTURE"],
+        )
+        rag.chunks.append(l2_root)
+
+    return {
+        "l0_leaves_count": sum(len(v) for v in leaves_by_cat.values()),
+        "l1_clusters_count": len(active_l1_ids),
+        "l2_root_updated": True,
+    }
 
 
 def run_daily_knowledge_dag() -> dict[str, Any]:
@@ -334,7 +423,11 @@ def run_daily_knowledge_dag() -> dict[str, Any]:
         )
         ingested_events.append(evt_id)
 
-    # Re-sync vector store indices
+    # 3. Automatically synthesize and balance the RAPTOR hierarchical tree (L0 -> L1 -> L2)
+    raptor_stats = synthesize_raptor_hierarchical_tree(rag)
+
+    # 4. Save to vault and re-sync vector store indices
+    rag._save_to_disk()
     rag._rebuild_indices()
 
     return {
@@ -343,6 +436,7 @@ def run_daily_knowledge_dag() -> dict[str, Any]:
         "documents_inbox": str(DOCUMENTS_DIR),
         "newly_ingested_docs": ingested_docs,
         "newly_synced_git_events": ingested_events,
+        "raptor_tree_stats": raptor_stats,
         "total_activities": lakehouse.count_activities(),
         "total_knowledge_chunks": len(rag.chunks),
         "total_graph_nodes": rag.graph_store.node_count(),

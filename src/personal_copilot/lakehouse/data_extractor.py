@@ -12,10 +12,36 @@ import json
 import sqlite3
 from typing import Any
 
-from personal_copilot.config import CHROMA_DIR, LAKEHOUSE_DB_PATH, SNAPSHOTS_DIR, VAULT_PATH
+from personal_copilot.config import CHROMA_DIR, DOCUMENTS_DIR, LAKEHOUSE_DB_PATH, SNAPSHOTS_DIR, VAULT_PATH
+
+
+def check_and_auto_sync_documents() -> bool:
+    """
+    Zero-command auto-sync watcher:
+    Compares the files in `data/documents/` against the knowledge vault timestamp.
+    If a new folder or modified file is detected, automatically executes `run_daily_knowledge_dag()`.
+    """
+    if not DOCUMENTS_DIR.exists():
+        return False
+    try:
+        doc_files = list(DOCUMENTS_DIR.rglob("*.md")) + list(DOCUMENTS_DIR.rglob("*.txt"))
+        if not doc_files:
+            return False
+
+        vault_mtime = VAULT_PATH.stat().st_mtime if VAULT_PATH.exists() else 0
+        needs_sync = any(f.stat().st_mtime > vault_mtime for f in doc_files)
+
+        if needs_sync:
+            from personal_copilot.dag import run_daily_knowledge_dag
+            run_daily_knowledge_dag()
+            return True
+    except Exception:
+        pass
+    return False
 
 
 def extract_live_data() -> dict[str, Any]:
+    check_and_auto_sync_documents()
     vault_data: dict[str, Any] = {"chunks": [], "knowledge_graph": {}}
     if VAULT_PATH.exists():
         try:

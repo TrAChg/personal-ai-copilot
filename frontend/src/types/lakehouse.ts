@@ -19,6 +19,10 @@ export interface KnowledgeChunk {
   created_date: string;
   is_latest: boolean;
   entities?: string[];
+  raptor_parent_l1?: string;
+  raptor_parent_l2?: string;
+  child_count?: number;
+  file_name?: string;
 }
 
 export interface ActivityLog {

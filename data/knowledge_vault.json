@@ -1,1149 +1,1576 @@
 {
   "chunks": [
     {
-      "chunk_id": "NOTE-LLM-01-OLD",
-      "title": "[OLD MISCONCEPTION] Embedding Matrix W_E vs Input X & Fact Storage",
-      "content": "Old Note (2026-11-03): I initially thought X in R^(T x d_model) was the entire dictionary W_E (thinking T = V) and that we could search factual company answers directly inside W_E.",
-      "category": "llm_foundations",
-      "raptor_level": 0,
-      "created_date": "2026-11-03",
-      "authority_rank": 1,
-      "is_latest": false,
-      "topic_key": "llm_embedding_and_memory",
-      "entities": [
-        "W_E_Dictionary",
-        "Sentence_Matrix_X",
-        "LLM_Architecture"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-LLM-01-VALIDATED",
-      "title": "[VALIDATED MASTERY] W_E vs Input X, Self-Attention (Q,K,V) & FFN World Memory",
-      "content": "Validated Note (2026-11-06): W_E in R^(V x d_model) is the fixed Vocabulary Dictionary of V=128,256 isolated tokens. When a prompt of length T arrives, we pluck T rows from W_E to build the sentence matrix X in R^(T x d_model). Self-Attention (softmax(QK^T / sqrt(d_k) + M)V) computes token-to-token relationships inside X, while the Feed-Forward Network (FFN, ~75% of parameters) stores general world knowledge learned from pre-training. Private facts live outside the LLM in ChromaDB (RAG) or SQL (MCP).",
-      "category": "llm_foundations",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "llm_embedding_and_memory",
-      "entities": [
-        "W_E_Dictionary",
-        "Sentence_Matrix_X",
-        "Self_Attention_QKV",
-        "FFN_World_Memory",
-        "KV_Cache"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-LLM-02",
-      "title": "LLM Inference Systems: Prefill (TTFT) vs Decode (TPS), KV-Cache & GQA",
-      "content": "Prefill processes all T prompt tokens in parallel (Matrix-Matrix multiplication, Compute-bound, measured by TTFT). Decode generates tokens 1-by-1 auto-regressively (Vector-Matrix multiplication, Memory-Bandwidth bound, measured by TPS). KV-Cache saves past Keys and Values so Decode is O(t) instead of O(t^2), costing VRAM = 2 * L * H_kv * d_h * S * B * P. Grouped-Query Attention (GQA) shares 1 KV head across G Query heads, shrinking KV-Cache by 4x-8x.",
-      "category": "llm_foundations",
-      "raptor_level": 0,
-      "created_date": "2026-11-05",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "llm_inference_kv_cache",
-      "entities": [
-        "KV_Cache",
-        "Grouped_Query_Attention",
-        "Self_Attention_QKV"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-RAG-01",
-      "title": "Production RAG: Parent-Child Chunking, Unit L2 Normalization, HNSW, BM25+RRF, RAPTOR & GraphRAG",
-      "content": "When vectors are L2-normalized (||u||=||v||=1), ||u-v||_2^2 = 2(1 - cos(theta)), so Dot Product, Cosine Similarity, and Euclidean L2 produce the exact same ranking (3x faster via Dot Product). ChromaDB uses HNSW (3-layer skip-list graph, O(log N)). Hybrid Search combines Dense Vector + BM25 via Reciprocal Rank Fusion RRF = 1/(60+rank_dense) + 1/(60+rank_bm25), followed by Cross-Encoder re-ranking. For massive datasets: RAPTOR builds a hierarchical summary tree by topic, whereas GraphRAG connects scattered entities across different documents via multi-hop edges.",
-      "category": "rag_architecture",
-      "raptor_level": 0,
-      "created_date": "2026-11-05",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "rag_hybrid_raptor_graph",
-      "entities": [
-        "ChromaDB_HNSW",
-        "Hybrid_BM25_RRF",
-        "RAPTOR_Tree",
-        "GraphRAG_Network"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-DE-01",
-      "title": "Project: Databricks Smart Mobility Lakehouse & SQL/Python DE Mastery",
-      "content": "Built end-to-end Medallion Architecture (Bronze raw -> Silver cleaned/deduplicated -> Gold KPIs) using PySpark and Delta Lake ACID transactions, guarded by pre-commit (ruff, mypy with explicit_package_bases) and GitHub Actions CI/CD. Mastered SQL logical execution order (FROM -> JOIN -> WHERE -> GROUP BY -> HAVING -> SELECT -> DISTINCT -> ORDER BY -> LIMIT), conditional aggregation HAVING SUM(CASE WHEN...), and Python heapq K-way merge using tuple tie-breaking (value, stream_idx, iterator).",
-      "category": "data_engineering",
-      "raptor_level": 0,
-      "created_date": "2026-11-02",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "de_lakehouse_sql_python",
-      "entities": [
-        "Databricks_Medallion_Lakehouse",
-        "Delta_Lake_ACID",
-        "PySpark_Engine",
-        "GitHub_Actions_CICD"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-CV-01",
-      "title": "Computer Vision Foundations: 3D CNN Kernels, Spatial Formulas & ResNet Residual Skips",
-      "content": "3D CNN kernel volume (K x K x C_in), spatial output formula floor((W - K + 2P)/S) + 1, and parameter counting (K*K*C_in + 1)*C_out. ResNet residual skip connections y = F(x) + x resolve vanishing gradients across deep backbones.",
-      "category": "computer_vision",
-      "raptor_level": 0,
-      "created_date": "2026-11-01",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "cv_cnn_clip_projects",
-      "entities": [
-        "CNN_ResNet50_Project"
-      ]
-    },
-    {
-      "chunk_id": "RAPTOR-L1-GENAI",
-      "title": "[RAPTOR Level-1 Summary] GenAI, LLM, RAG, MCP & Multi-Agent Architecture",
-      "content": "RAPTOR Level-1 GenAI Summary: Complete mastery of Transformer math (W_E, RoPE, QKV Self-Attention, FFN memory, KV-Cache, GQA), Production RAG (ChromaDB HNSW, Hybrid BM25+RRF, Cross-Encoder, RAPTOR Tree, GraphRAG), MCP JSON-RPC 2.0 (`Host -> Client -> Server`), and Multi-Subagent Orchestration (`Code -> Test -> Review -> GitDeploy`) where evaluator retry loops boost 10-step reliability from 43.4% (0.92^10) to 99.49%.",
-      "category": "raptor_summary",
-      "raptor_level": 1,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "raptor_genai_summary",
-      "entities": [
-        "Self_Attention_QKV",
-        "RAPTOR_Tree",
-        "GraphRAG_Network",
-        "MCP_JSON_RPC",
-        "GitHub_Actions_CICD"
-      ]
-    },
-    {
-      "chunk_id": "RAPTOR-L2-SECOND-BRAIN",
-      "title": "[RAPTOR Level-2 Global Root] Tran Chung & Antigravity Shared Engineering Knowledge Vault",
-      "content": "RAPTOR Level-2 Global Vault Summary: Unified Second Brain capturing all projects and mathematical foundations built by Tran Chung & Antigravity across 4 pillars: (1) Databricks PySpark Delta Lakehouse + CI/CD, (2) SQL & Python DE Algorithms (150 SQL Mastery + Heapq K-Way Merge), (3) Deep Learning CV (CNN Math, ResNet50, CLIP+ChromaDB), and (4) Autonomous GenAI Systems (LLM Internals, Hybrid RAG/RAPTOR/GraphRAG, MCP Protocol, and Self-Healing Coding Subagents).",
-      "category": "raptor_summary",
-      "raptor_level": 2,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "raptor_global_root",
-      "entities": [
-        "Tran_Chung_Vault",
-        "Databricks_Medallion_Lakehouse",
-        "CLIP_Multimodal_Project",
-        "MCP_JSON_RPC"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-EVT-07",
-      "title": "Verified KV-Cache Python Utility (`compute_kv_cache_gb`)",
-      "content": "Autonomous Subagent pipeline verified Llama-3-8B KV-Cache (L=32, H_kv=8, d_h=128, S=8192, B=16, FP16) = 16.78 GB.",
-      "category": "autonomous_engineering",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "kv_cache_python_utility",
-      "entities": []
-    },
-    {
-      "chunk_id": "NOTE-CRAG-01",
-      "title": "Corrective RAG (CRAG) External Search & Dynamic Graph Node Ingestion",
-      "content": "When internal ChromaDB retrieval confidence is below threshold, CRAG triggers External Search (Web/ArXiv via Antigravity search_web) and dynamically ingests new Nodes and Edges into the internal GraphRAG Knowledge Graph.",
-      "category": "rag_architecture",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "crag_external_search",
-      "entities": [
-        "GraphRAG_Network",
-        "CRAG_External_Search"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-LLM-03",
-      "title": "FlashAttention GPU SRAM Tiling",
-      "content": "FlashAttention fuses QK^T, softmax, and V multiplication inside fast on-chip GPU SRAM via online softmax tiling, avoiding O(T^2) HBM reads/writes.",
-      "category": "technical_mastery",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "flash_attention_sram",
-      "entities": [
-        "Self_Attention_QKV",
-        "FlashAttention_SRAM"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-WEB-01",
-      "title": "Frontend Architecture: React Component Model, Hooks, Virtual DOM and Streaming UI",
-      "content": "React builds declarative UIs where UI = f(state). Key rules: (1) Functional components with Hooks (useState for local state, useEffect for side-effects/API lifecycle with cleanup, useMemo/useCallback to prevent expensive re-renders, useRef for mutable DOM/stream references). (2) Virtual DOM reconciliation diffs component trees in O(N) using unique key props on lists. (3) For AI/LLM Full-Stack apps, connect React to backend streaming endpoints via Fetch ReadableStream or Server-Sent Events (SSE) for real-time token rendering.",
-      "category": "fullstack_web",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "react_frontend_architecture",
-      "entities": [
-        "React_Frontend",
-        "REST_SSE_WebSockets_API"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-WEB-02",
-      "title": "Backend Choice: Node.js + Express vs. Python FastAPI and OWASP Web Security",
-      "content": "Backend selection rule: (1) Choose Node.js + Express for I/O-heavy web gateways, BFF (Backend-For-Frontend), real-time WebSocket servers, session/cookie MVC apps (Project/myapp), or unified JS/TS stacks; Node.js uses the single-threaded non-blocking Libuv Event Loop to handle thousands of concurrent I/O connections. (2) Choose Python FastAPI (ASGI + Uvicorn + Pydantic v2) when the backend executes AI/ML inference (PyTorch, SentenceTransformers), RAG vector search (ChromaDB), or data pipelines (Project/historical-news-search, Project/shortest-link). Mandatory OWASP security: SQL prepared statements, Zod/Pydantic validation, CSP + output escaping (XSS), HttpOnly/SameSite cookies + CSRF tokens, and strict upload MIME whitelisting.",
-      "category": "fullstack_web",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "nodejs_express_vs_fastapi",
-      "entities": [
-        "REST_SSE_WebSockets_API",
-        "NodeJS_Express_Backend"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-API-01",
-      "title": "API Protocol Selection Matrix: REST vs. SSE vs. WebSockets vs. gRPC vs. MCP",
-      "content": "Protocol choice by communication pattern: (1) REST (HTTP/JSON): Stateless CRUD over resource nouns (GET/POST/PUT/PATCH/DELETE), pagination, rate-limiting (429), and status codes (200, 201, 400, 401, 403, 404, 422, 500). (2) Server-Sent Events (SSE): Unidirectional server-to-client HTTP stream; ideal for streaming LLM tokens to React. (3) WebSockets: Bidirectional full-duplex persistent TCP channel; ideal for live chat rooms and collaborative state. (4) gRPC (Protobuf/HTTP2): High-throughput binary microservice-to-microservice RPC. (5) MCP (JSON-RPC 2.0): Standardized AI Agent-to-Tool/DB protocol (@resource, @tool, @prompt).",
-      "category": "api_architecture",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "api_protocol_selection_matrix",
-      "entities": [
-        "REST_SSE_WebSockets_API",
-        "FastAPI_Backend"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-DEVOPS-01",
-      "title": "Modern Python Toolchain: uv Package Manager, Ruff Linter/Formatter, Mypy and Pre-Commit",
-      "content": "Production Python project setup (from uv-guide, ruff-guide, precommit-guide): (1) uv: Rust-powered package and virtualenv manager (10x-100x faster than pip/poetry); uses pyproject.toml + deterministic uv.lock, uv sync --frozen for reproducible builds, and uv run for zero-activation execution. (2) Ruff: Replaces Flake8, Black, and isort in one Rust binary (ruff check --fix for lint rules E/F/W/I/B/UP and ruff format). (3) Mypy: Static type checker (mypy --strict, explicit_package_bases = true) catching type/None bugs before runtime. (4) Pre-commit: Git hook manager (.pre-commit-config.yaml) running ruff, mypy, check-yaml, and trailing-whitespace before every git commit.",
-      "category": "devops_mlops",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "uv_ruff_mypy_precommit_toolchain",
-      "entities": [
-        "FastAPI_Backend",
-        "UV_Ruff_PreCommit_Toolchain"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-DEVOPS-02",
-      "title": "Containerization and CI/CD: Docker Multi-Stage Builds, Docker Compose and GitLab CI / GitHub Actions",
-      "content": "Deployment and CI/CD Architecture (from gitlab-ci-guide and Project/shortest-link): (1) Docker: Multi-stage Dockerfiles (Stage 1 builder runs uv sync --frozen --no-dev or npm ci and npm run build; Stage 2 runtime copies built artifacts into python:3.11-slim or node:20-alpine as non-root user) with .dockerignore excluding .venv, node_modules, and .git. (2) Docker Compose (docker-compose.yml): Orchestrates multi-container stacks (React + Express/FastAPI + Postgres/ChromaDB/Redis) with healthchecks, volumes, and .env config. (3) GitLab CI/CD (.gitlab-ci.yml) and GitHub Actions: Automated 4-stage pipeline (lint -> test -> build -> deploy) with dependency caching so broken code never merges to main.",
-      "category": "devops_mlops",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "docker_gitlab_cicd_architecture",
-      "entities": [
-        "UV_Ruff_PreCommit_Toolchain",
-        "Docker_GitLab_CICD"
-      ]
-    },
-    {
-      "chunk_id": "RAPTOR-L1-FULLSTACK-DEVOPS",
-      "title": "[RAPTOR Level-1 Summary] Full-Stack Web (React, Node/Express, FastAPI, APIs) and DevOps (uv, Ruff, Pre-Commit, Docker, CI/CD)",
-      "content": "RAPTOR Level-1 Full-Stack and DevOps Decision Blueprint: Frontend in React (Hooks + SSE/REST); Backend in Node.js/Express (for I/O gateways, WebSockets, MVC sessions) or Python FastAPI (for AI/LLM/RAG/Data workloads); API layer via REST, SSE, WebSockets, or MCP; Code quality enforced via uv, ruff, mypy, pytest, and pre-commit; packaged via multi-stage Docker and docker-compose; and gated by GitLab CI/CD or GitHub Actions.",
-      "category": "raptor_summary",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "raptor_fullstack_devops_summary",
-      "entities": [
-        "NodeJS_Express_Backend",
-        "Docker_GitLab_CICD"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-ML-01",
-      "title": "Classical Machine Learning and Tabular AI: Scikit-Learn, XGBoost, Cross-Validation and Leakage Prevention",
-      "content": "Tabular ML Decision Rule (SY09): On structured/tabular datasets (<1M rows), Gradient Boosted Decision Trees (XGBoost, LightGBM, CatBoost) outperform Deep Learning. Core engineering rules: (1) Prevent Data Leakage by fitting StandardScaler, Imputer, and TargetEncoder strictly inside sklearn.pipeline.Pipeline on X_train only during Stratified K-Fold Cross-Validation. (2) Bias-Variance and Regularization: L1 (Lasso) induces sparsity for feature selection; L2 (Ridge) shrinks collinear weights; PCA/SVD projects orthogonal maximum-variance axes. (3) Class Imbalance: Use PR-AUC and F1/F-beta instead of ROC-AUC or accuracy; tune scale_pos_weight and probability thresholds. (4) Explainability: Use SHAP values for global and local feature attribution.",
-      "category": "machine_learning_core",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "classical_ml_xgboost_tabular",
-      "entities": [
-        "Classical_ML_XGBoost",
-        "Deep_Learning_PyTorch_UNet"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-DL-01",
-      "title": "Deep Learning Architectures and Training: PyTorch, U-Net Segmentation, ResNet/ViT, AdamW and AMP",
-      "content": "Deep Learning Architecture Selection (Project/U_net_ and CV): (1) Image Classification: ResNet50 (residual skip connections y = F(x) + x prevent vanishing gradients) or Vision Transformer (ViT). (2) Pixel-Level Semantic Segmentation (Medical/Industrial Microscopy): U-Net symmetric Encoder-Decoder with skip connections concatenating high-resolution encoder feature maps with upsampled decoder maps, trained with Dice Loss + Binary Cross-Entropy (BCE). (3) PyTorch Production Training Loop: optimizer.zero_grad(set_to_none=True) -> torch.amp.autocast(bf16/fp16) forward pass -> loss.backward() -> clip_grad_norm_ -> optimizer.step() with AdamW (decoupled weight decay) and Cosine Annealing LR with Warmup.",
-      "category": "deep_learning_core",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "pytorch_unet_training_internals",
-      "entities": [
-        "Deep_Learning_PyTorch_UNet",
-        "CNN_ResNet50_Project"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-LLM-04",
-      "title": "LLM Post-Training, Fine-Tuning and Serving: RAG vs. LoRA/QLoRA, DPO, Quantization and vLLM",
-      "content": "Decision Rule (RAG vs. Fine-Tuning): Use RAG when facts change dynamically or require source citations; use Fine-Tuning (SFT + LoRA/QLoRA) when teaching domain tone, strict JSON/tool schemas, or distilling a large model into a fast 7B/8B model. LoRA Math: Freezes pretrained W_0 in R^(d x k) and trains low-rank delta W = W_0 + (alpha/r) * B * A where B in R^(d x r), A in R^(r x k) with rank r << min(d,k) (e.g., r=16), cutting trainable parameters by >99%. QLoRA quantizes W_0 to 4-bit NormalFloat (NF4) with Double Quantization and Paged Optimizers. Alignment uses DPO (Direct Preference Optimization on chosen vs. rejected pairs without a separate Reward Model). Production serving uses vLLM (PagedAttention eliminating KV-Cache fragmentation) + AWQ/FP8 quantization.",
-      "category": "llm_foundations",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "llm_lora_qlora_dpo_vllm",
-      "entities": [
-        "Self_Attention_QKV",
-        "LoRA_QLoRA_vLLM"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-DE-02",
-      "title": "Distributed Streaming Architecture: Apache Kafka Brokers, Partitions, Consumer Groups and Exactly-Once (Module 06)",
-      "content": "Event-Driven Streaming (AI/Module_06): Choose Apache Kafka over REST/RabbitMQ for high-throughput, durable, replayable event logs and Change Data Capture (CDC). Core mechanics: (1) Topics are sharded into Partitions (the unit of parallelism); strict ordering is guaranteed ONLY within a single partition via hash(message_key) mod P. (2) Durability and Fault Tolerance: Leader + Follower replicas across Brokers with acks=all and min.insync.replicas=2. (3) Consumer Groups: Horizontal scaling where each partition is consumed by at most ONE consumer within a group (avoid having more consumers than partitions). (4) Delivery Semantics: At-Least-Once (commit offset after processing + idempotent sink) vs. Exactly-Once (transactional producer + read_committed).",
-      "category": "data_engineering",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "apache_kafka_streaming_architecture",
-      "entities": [
-        "Databricks_Medallion_Lakehouse",
-        "Apache_Kafka_Streaming"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-DE-03",
-      "title": "PySpark Optimization, Kimball Star Schema (SCD Type 2), dbt and Unity Catalog Governance (Module 07 & NF26)",
-      "content": "Data Engineering & Warehouse Core (AI/Module_07 and Project/NF26_Smart_Teems): (1) PySpark Tuning: Minimize Wide Transformations (Shuffle); use Broadcast Hash Join (broadcast(small_df)) when dimension table <100MB; resolve Data Skew via key salting or Adaptive Query Execution (AQE); optimize Delta Lake via OPTIMIZE + ZORDER BY on high-cardinality filter columns and VACUUM. (2) Data Modeling (Kimball Star Schema & dbt): Central Fact tables (granular measurements + foreign keys) surrounded by Dimension tables with SCD Type 2 (valid_from, valid_to, is_current) for historical tracking, built via modular dbt SQL layers (staging -> intermediate -> marts) and served to PowerBI. (3) Unity Catalog Governance: 3-level namespace (catalog.schema.table), Row-Level Security (RLS), Column Masking, and end-to-end lineage.",
-      "category": "data_engineering",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "spark_optimization_dbt_star_schema_unity_catalog",
-      "entities": [
-        "Databricks_Medallion_Lakehouse",
-        "dbt_StarSchema_UnityCatalog"
-      ]
-    },
-    {
-      "chunk_id": "NOTE-SYS-01",
-      "title": "Distributed System Design and MLOps/LLMOps: Caching, Load Balancing, MLflow and Drift Monitoring (Module 08)",
-      "content": "System Design & Production MLOps (AI/Module_08): (1) High Availability & Scaling: L7 Load Balancers, Consistent Hashing, Redis Caching (Cache-Aside with TTL + random jitter to prevent Cache Stampede / Thundering Herd), Database Read Replicas + Sharding, and CAP Theorem trade-offs. (2) Production MLOps & LLMOps: Experiment and model registry via MLflow, Feature Stores for online/offline parity, Statistical Drift Detection (Population Stability Index PSI and Kolmogorov-Smirnov test triggering automated retraining), and LLM Observability (tracing TTFT/TPS latency, token budgets, and online RAGAS faithfulness guardrails).",
-      "category": "system_design_mlops",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "system_design_redis_mlflow_drift",
-      "entities": [
-        "Docker_GitLab_CICD",
-        "SystemDesign_Redis_MLflow"
-      ]
-    },
-    {
-      "chunk_id": "DOC-ADVANCED_MATH_TRANSFORMS",
-      "title": "[DOCUMENT] Advanced Fourier and Wavelet Transforms in AI Engineering",
+      "chunk_id": "advanced_math_transforms_DOC01",
+      "title": "[General] Advanced Fourier and Wavelet Transforms in AI Engineering",
       "content": "# Advanced Fourier and Wavelet Transforms in AI Engineering\n\nMathematical foundations of continuous and discrete Fourier Transforms (FT, DFT, FFT) and Wavelet Transforms for signal, time-series, and spatial representation in deep neural networks.\nFourier decomposition expresses signals as linear combinations of orthogonal basis sinusoids:\n$$X[k] = \\sum_{n=0}^{N-1} x[n] e^{-i 2\\pi k n / N}$$\nWavelet transforms overcome the uncertainty principle trade-off via multi-resolution time-frequency localization.",
-      "category": "MLOPS_DEVOPS",
+      "category": "General",
       "raptor_level": 0,
-      "created_date": "2026-11-06",
+      "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
-      "topic_key": "topic_advanced_math_transforms",
+      "topic_key": "topic_general_advanced_math_transforms",
       "entities": [
-        "MLOPS_DEVOPS",
-        "DOC_INBOX"
-      ]
+        "General",
+        "advanced_math_transforms",
+        "RAPTOR-L1-SYSTEM-DESIGN"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-GENERAL",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "advanced_math_transforms.md"
     },
     {
-      "chunk_id": "DOC-ENGLISH_C1-TECH_INTERVIEW_MASTERY",
-      "title": "[ENGLISH_C1] High-Impact English Idioms and Phrases for FAANG Tech Interviews",
-      "content": "# High-Impact English Idioms and Phrases for FAANG Tech Interviews\n\n## Overview\nEssential natural English idioms, transitions, and phrasing patterns for senior AI/Systems engineering interviews.\n\n## 1. Navigating Trade-Offs & Complexity\n- **\"It's a double-edged sword\"**: When discussing solutions with significant pros and cons (e.g., in-memory caching vs. cache invalidation complexity).\n- **\"At first glance..., but upon closer inspection...\"**: Demonstrates analytical depth rather than jumping to conclusions.\n- **\"Strike the right balance\"**: Used when optimizing between latency, throughput, and consistency.\n\n## 2. Distributed Systems & Architectural Discussion\n- **\"Graceful degradation\"**: Ensuring that under high load, non-critical services fail without crashing the core system.\n- **\"Decouple state from computation\"**: Clean design pattern for scalable distributed microservices and stream processing.\n- **\"Blast radius mitigation\"**: Limiting the failure impact through circuit breakers and partition boundaries.\n\n## 3. Natural Connectors for System Design\n- *\"To walk you through my thought process...\"*\n- *\"Let's establish our baseline constraints before diving into the component design.\"*\n- *\"We can benchmark this against a naive approach to measure real-world performance gains.\"*",
-      "category": "ENGLISH_C1",
-      "raptor_level": 0,
-      "created_date": "2026-11-06",
-      "authority_rank": 5,
-      "is_latest": true,
-      "topic_key": "topic_english_c1_tech_interview_mastery",
-      "entities": [
-        "ENGLISH_C1",
-        "DOC_INBOX"
-      ]
-    },
-    {
-      "chunk_id": "DOC-ALGORITHMS-K_WAY_MERGE",
-      "title": "[ALGORITHMS] External Sorting & K-Way Merge with Min-Heap",
+      "chunk_id": "k_way_merge_DOC01",
+      "title": "[Algorithms] External Sorting & K-Way Merge with Min-Heap",
       "content": "# External Sorting & K-Way Merge with Min-Heap\n\n## 1. Problem Context & Asymptotics\nWhen sorting datasets larger than available RAM (e.g. 100 GB log files on an 8 GB worker), External Merge Sort divides the data into $K$ sorted runs on disk, then performs a multi-way merge.\n\n## 2. Min-Heap Optimal K-Way Merge\nA direct sequential scan across $K$ files yields $O(N \\cdot K)$ complexity. By maintaining a Min-Heap of size $K$:\n- **Heap Element Tuple**: `(current_value, run_index)`\n- **Initialization**: Insert the first element from each of the $K$ sorted runs: $O(K \\log K)$.\n- **Streaming Loop**:\n  1. Pop the minimum value from the heap and write to output buffer.\n  2. Read the next item from that specific `run_index` and push it to the heap ($O(\\log K)$).\n- **Total Time Complexity**: $O(N \\log K)$, where $N$ is total elements across all runs.\n- **Space Complexity**: $O(K)$ auxiliary memory in RAM.\n\n## 3. High-Throughput Production Pattern\nIn Python, this is implemented natively via `heapq.merge(*iterables)` with generator expressions to avoid loading entire arrays into memory.",
-      "category": "ALGORITHMS",
+      "category": "Algorithms",
       "raptor_level": 0,
-      "created_date": "2026-11-06",
+      "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
       "topic_key": "topic_algorithms_k_way_merge",
       "entities": [
-        "ALGORITHMS",
-        "DOC_INBOX"
-      ]
+        "Algorithms",
+        "k_way_merge",
+        "RAPTOR-L1-SYSTEM-DESIGN"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-ALGORITHMS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "k_way_merge.md"
     },
     {
-      "chunk_id": "DOC-SYSTEM_DESIGN-CONSISTENT_HASHING",
-      "title": "[SYSTEM_DESIGN] Consistent Hashing with Virtual Nodes in Distributed Systems",
-      "content": "# Consistent Hashing with Virtual Nodes in Distributed Systems\n\n## 1. Problem Formulation\nIn a distributed caching or database system (e.g. Cassandra, DynamoDB, Memcached), traditional modulo hashing $H(key) \\pmod N$ causes massive rehashing ($O(K)$ keys moved) when a node is added or removed, inducing severe cache stampedes.\n\n## 2. Mathematical Definition\nConsistent hashing maps both servers and keys onto a circular hash ring $[0, 2^{32} - 1]$ using a uniform hash function (e.g., MurmurHash3 or SHA-256):\n$$\\text{RingPosition} = H(x) \\pmod{2^{32}}$$\n\nWhen a key $k$ is queried, it moves clockwise until it finds the first node whose position is greater than or equal to $H(k)$:\n$$\\text{AssignedNode}(k) = \\min \\{ n \\in \\text{Nodes} \\mid H(n) \\ge H(k) \\} \\cup \\{\\min(\\text{Nodes})\\}$$\n\n## 3. Virtual Nodes (V-Nodes) for Load Balance\nTo avoid hot spots and non-uniform clustering on the ring, each physical node is replicated as $V$ virtual nodes:\n- Physical server $S_i$ is mapped to $\\{H(S_i \\# 1), H(S_i \\# 2), \\dots, H(S_i \\# V)\\}$.\n- Standard recommendation: $V \\approx 100\\text{--}256$ virtual nodes per physical host.\n- When server $S_i$ crashes, its keys are evenly distributed across all remaining servers rather than overloading a single neighbor.",
-      "category": "SYSTEM_DESIGN",
+      "chunk_id": "api_protocol_selection_matrix_rest_vs_sse_vs_webso_DOC01",
+      "title": "[API_Architecture] API Protocol Selection Matrix: REST vs. SSE vs. WebSockets vs. gRPC vs. MCP",
+      "content": "# API Protocol Selection Matrix: REST vs. SSE vs. WebSockets vs. gRPC vs. MCP\n\n**Category**: `api_architecture` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nProtocol choice by communication pattern: (1) REST (HTTP/JSON): Stateless CRUD over resource nouns (GET/POST/PUT/PATCH/DELETE), pagination, rate-limiting (429), and status codes (200, 201, 400, 401, 403, 404, 422, 500). (2) Server-Sent Events (SSE): Unidirectional server-to-client HTTP stream; ideal for streaming LLM tokens to React. (3) WebSockets: Bidirectional full-duplex persistent TCP channel; ideal for live chat rooms and collaborative state. (4) gRPC (Protobuf/HTTP2): High-throughput binary microservice-to-microservice RPC. (5) MCP (JSON-RPC 2.0): Standardized AI Agent-to-Tool/DB protocol (@resource, @tool, @prompt).\n\n## Connected GraphRAG Entities\n\n- `REST_SSE_WebSockets_API`\n- `FastAPI_Backend`",
+      "category": "API_Architecture",
       "raptor_level": 0,
-      "created_date": "2026-11-06",
+      "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
-      "topic_key": "topic_system_design_consistent_hashing",
+      "topic_key": "topic_api_architecture_api_protocol_selection_matrix_rest_vs_sse_vs_webso",
       "entities": [
-        "SYSTEM_DESIGN",
-        "DOC_INBOX"
-      ]
+        "API_Architecture",
+        "api_protocol_selection_matrix_rest_vs_sse_vs_webso",
+        "RAPTOR-L1-FULLSTACK-WEB"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-API_ARCHITECTURE",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "api_protocol_selection_matrix_rest_vs_sse_vs_webso.md"
     },
     {
-      "chunk_id": "DOC-MACHINE_LEARNING-LEAK_FREE_GRADIENT_BOOSTING",
-      "title": "[MACHINE_LEARNING] Leak-Free Machine Learning Pipeline: HistGradientBoostingRegressor & Out-of-Fold Preprocessing",
+      "chunk_id": "verified_kv-cache_python_utility_compute_kv_cache__DOC01",
+      "title": "[Autonomous_Engineering] Verified KV-Cache Python Utility (`compute_kv_cache_gb`)",
+      "content": "# Verified KV-Cache Python Utility (`compute_kv_cache_gb`)\n\n**Category**: `autonomous_engineering` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nAutonomous Subagent pipeline verified Llama-3-8B KV-Cache (L=32, H_kv=8, d_h=128, S=8192, B=16, FP16) = 16.78 GB.",
+      "category": "Autonomous_Engineering",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_autonomous_engineering_verified_kv-cache_python_utility_compute_kv_cache_",
+      "entities": [
+        "Autonomous_Engineering",
+        "verified_kv-cache_python_utility_compute_kv_cache_",
+        "RAPTOR-L1-SYSTEM-DESIGN"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-AUTONOMOUS_ENGINEERING",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "verified_kv-cache_python_utility_compute_kv_cache_.md"
+    },
+    {
+      "chunk_id": "computer_vision_foundations_3d_cnn_kernels_spatial_DOC01",
+      "title": "[Computer_Vision] Computer Vision Foundations: 3D CNN Kernels, Spatial Formulas & ResNet Residual Skips",
+      "content": "# Computer Vision Foundations: 3D CNN Kernels, Spatial Formulas & ResNet Residual Skips\n\n**Category**: `computer_vision` | **Authority Rank**: 5/5 | **Date**: 2026-11-01\n\n## Overview & Key Concepts\n\n3D CNN kernel volume (K x K x C_in), spatial output formula floor((W - K + 2P)/S) + 1, and parameter counting (K*K*C_in + 1)*C_out. ResNet residual skip connections y = F(x) + x resolve vanishing gradients across deep backbones.\n\n## Connected GraphRAG Entities\n\n- `CNN_ResNet50_Project`",
+      "category": "Computer_Vision",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_computer_vision_computer_vision_foundations_3d_cnn_kernels_spatial",
+      "entities": [
+        "Computer_Vision",
+        "computer_vision_foundations_3d_cnn_kernels_spatial",
+        "RAPTOR-L1-DEEP-LEARNING-CV"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-COMPUTER_VISION",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "computer_vision_foundations_3d_cnn_kernels_spatial.md"
+    },
+    {
+      "chunk_id": "distributed_streaming_architecture_apache_kafka_br_DOC01",
+      "title": "[Data_Engineering] Distributed Streaming Architecture: Apache Kafka Brokers, Partitions, Consumer Groups and Exactly-Once (Module 06)",
+      "content": "# Distributed Streaming Architecture: Apache Kafka Brokers, Partitions, Consumer Groups and Exactly-Once (Module 06)\n\n**Category**: `data_engineering` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nEvent-Driven Streaming (AI/Module_06): Choose Apache Kafka over REST/RabbitMQ for high-throughput, durable, replayable event logs and Change Data Capture (CDC). Core mechanics: (1) Topics are sharded into Partitions (the unit of parallelism); strict ordering is guaranteed ONLY within a single partition via hash(message_key) mod P. (2) Durability and Fault Tolerance: Leader + Follower replicas across Brokers with acks=all and min.insync.replicas=2. (3) Consumer Groups: Horizontal scaling where each partition is consumed by at most ONE consumer within a group (avoid having more consumers than partitions). (4) Delivery Semantics: At-Least-Once (commit offset after processing + idempotent sink) vs. Exactly-Once (transactional producer + read_committed).\n\n## Connected GraphRAG Entities\n\n- `Databricks_Medallion_Lakehouse`\n- `Apache_Kafka_Streaming`",
+      "category": "Data_Engineering",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_data_engineering_distributed_streaming_architecture_apache_kafka_br",
+      "entities": [
+        "Data_Engineering",
+        "distributed_streaming_architecture_apache_kafka_br",
+        "RAPTOR-L1-DATA-ENGINEERING"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-DATA_ENGINEERING",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "distributed_streaming_architecture_apache_kafka_br.md"
+    },
+    {
+      "chunk_id": "project_databricks_smart_mobility_lakehouse_sql_py_DOC01",
+      "title": "[Data_Engineering] Project: Databricks Smart Mobility Lakehouse & SQL/Python DE Mastery",
+      "content": "# Project: Databricks Smart Mobility Lakehouse & SQL/Python DE Mastery\n\n**Category**: `data_engineering` | **Authority Rank**: 5/5 | **Date**: 2026-11-02\n\n## Overview & Key Concepts\n\nBuilt end-to-end Medallion Architecture (Bronze raw -> Silver cleaned/deduplicated -> Gold KPIs) using PySpark and Delta Lake ACID transactions, guarded by pre-commit (ruff, mypy with explicit_package_bases) and GitHub Actions CI/CD. Mastered SQL logical execution order (FROM -> JOIN -> WHERE -> GROUP BY -> HAVING -> SELECT -> DISTINCT -> ORDER BY -> LIMIT), conditional aggregation HAVING SUM(CASE WHEN...), and Python heapq K-way merge using tuple tie-breaking (value, stream_idx, iterator).\n\n## Connected GraphRAG Entities\n\n- `Databricks_Medallion_Lakehouse`\n- `Delta_Lake_ACID`\n- `PySpark_Engine`\n- `GitHub_Actions_CICD`",
+      "category": "Data_Engineering",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_data_engineering_project_databricks_smart_mobility_lakehouse_sql_py",
+      "entities": [
+        "Data_Engineering",
+        "project_databricks_smart_mobility_lakehouse_sql_py",
+        "RAPTOR-L1-DATA-ENGINEERING"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-DATA_ENGINEERING",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "project_databricks_smart_mobility_lakehouse_sql_py.md"
+    },
+    {
+      "chunk_id": "pyspark_optimization_kimball_star_schema_scd_type__DOC01",
+      "title": "[Data_Engineering] PySpark Optimization, Kimball Star Schema (SCD Type 2), dbt and Unity Catalog Governance (Module 07 & NF26)",
+      "content": "# PySpark Optimization, Kimball Star Schema (SCD Type 2), dbt and Unity Catalog Governance (Module 07 & NF26)\n\n**Category**: `data_engineering` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nData Engineering & Warehouse Core (AI/Module_07 and Project/NF26_Smart_Teems): (1) PySpark Tuning: Minimize Wide Transformations (Shuffle); use Broadcast Hash Join (broadcast(small_df)) when dimension table <100MB; resolve Data Skew via key salting or Adaptive Query Execution (AQE); optimize Delta Lake via OPTIMIZE + ZORDER BY on high-cardinality filter columns and VACUUM. (2) Data Modeling (Kimball Star Schema & dbt): Central Fact tables (granular measurements + foreign keys) surrounded by Dimension tables with SCD Type 2 (valid_from, valid_to, is_current) for historical tracking, built via modular dbt SQL layers (staging -> intermediate -> marts) and served to PowerBI. (3) Unity Catalog Governance: 3-level namespace (catalog.schema.table), Row-Level Security (RLS), Column Masking, and end-to-end lineage.\n\n## Connected GraphRAG Entities\n\n- `Databricks_Medallion_Lakehouse`\n- `dbt_StarSchema_UnityCatalog`",
+      "category": "Data_Engineering",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_data_engineering_pyspark_optimization_kimball_star_schema_scd_type_",
+      "entities": [
+        "Data_Engineering",
+        "pyspark_optimization_kimball_star_schema_scd_type_",
+        "RAPTOR-L1-DATA-ENGINEERING"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-DATA_ENGINEERING",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "pyspark_optimization_kimball_star_schema_scd_type_.md"
+    },
+    {
+      "chunk_id": "deep_learning_architectures_and_training_pytorch_u_DOC01",
+      "title": "[Deep_Learning] Deep Learning Architectures and Training: PyTorch, U-Net Segmentation, ResNet/ViT, AdamW and AMP",
+      "content": "# Deep Learning Architectures and Training: PyTorch, U-Net Segmentation, ResNet/ViT, AdamW and AMP\n\n**Category**: `deep_learning_core` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nDeep Learning Architecture Selection (Project/U_net_ and CV): (1) Image Classification: ResNet50 (residual skip connections y = F(x) + x prevent vanishing gradients) or Vision Transformer (ViT). (2) Pixel-Level Semantic Segmentation (Medical/Industrial Microscopy): U-Net symmetric Encoder-Decoder with skip connections concatenating high-resolution encoder feature maps with upsampled decoder maps, trained with Dice Loss + Binary Cross-Entropy (BCE). (3) PyTorch Production Training Loop: optimizer.zero_grad(set_to_none=True) -> torch.amp.autocast(bf16/fp16) forward pass -> loss.backward() -> clip_grad_norm_ -> optimizer.step() with AdamW (decoupled weight decay) and Cosine Annealing LR with Warmup.\n\n## Connected GraphRAG Entities\n\n- `Deep_Learning_PyTorch_UNet`\n- `CNN_ResNet50_Project`",
+      "category": "Deep_Learning",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_deep_learning_deep_learning_architectures_and_training_pytorch_u",
+      "entities": [
+        "Deep_Learning",
+        "deep_learning_architectures_and_training_pytorch_u",
+        "RAPTOR-L1-DEEP-LEARNING-CV"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-DEEP_LEARNING",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "deep_learning_architectures_and_training_pytorch_u.md"
+    },
+    {
+      "chunk_id": "containerization_and_ci_cd_docker_multi-stage_buil_DOC01",
+      "title": "[DevOps_MLOps] Containerization and CI/CD: Docker Multi-Stage Builds, Docker Compose and GitLab CI / GitHub Actions",
+      "content": "# Containerization and CI/CD: Docker Multi-Stage Builds, Docker Compose and GitLab CI / GitHub Actions\n\n**Category**: `devops_mlops` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nDeployment and CI/CD Architecture (from gitlab-ci-guide and Project/shortest-link): (1) Docker: Multi-stage Dockerfiles (Stage 1 builder runs uv sync --frozen --no-dev or npm ci and npm run build; Stage 2 runtime copies built artifacts into python:3.11-slim or node:20-alpine as non-root user) with .dockerignore excluding .venv, node_modules, and .git. (2) Docker Compose (docker-compose.yml): Orchestrates multi-container stacks (React + Express/FastAPI + Postgres/ChromaDB/Redis) with healthchecks, volumes, and .env config. (3) GitLab CI/CD (.gitlab-ci.yml) and GitHub Actions: Automated 4-stage pipeline (lint -> test -> build -> deploy) with dependency caching so broken code never merges to main.\n\n## Connected GraphRAG Entities\n\n- `UV_Ruff_PreCommit_Toolchain`\n- `Docker_GitLab_CICD`",
+      "category": "DevOps_MLOps",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_devops_mlops_containerization_and_ci_cd_docker_multi-stage_buil",
+      "entities": [
+        "DevOps_MLOps",
+        "containerization_and_ci_cd_docker_multi-stage_buil",
+        "RAPTOR-L1-DEVOPS-MLOPS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-DEVOPS_MLOPS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "containerization_and_ci_cd_docker_multi-stage_buil.md"
+    },
+    {
+      "chunk_id": "modern_python_toolchain_uv_package_manager_ruff_li_DOC01",
+      "title": "[DevOps_MLOps] Modern Python Toolchain: uv Package Manager, Ruff Linter/Formatter, Mypy and Pre-Commit",
+      "content": "# Modern Python Toolchain: uv Package Manager, Ruff Linter/Formatter, Mypy and Pre-Commit\n\n**Category**: `devops_mlops` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nProduction Python project setup (from uv-guide, ruff-guide, precommit-guide): (1) uv: Rust-powered package and virtualenv manager (10x-100x faster than pip/poetry); uses pyproject.toml + deterministic uv.lock, uv sync --frozen for reproducible builds, and uv run for zero-activation execution. (2) Ruff: Replaces Flake8, Black, and isort in one Rust binary (ruff check --fix for lint rules E/F/W/I/B/UP and ruff format). (3) Mypy: Static type checker (mypy --strict, explicit_package_bases = true) catching type/None bugs before runtime. (4) Pre-commit: Git hook manager (.pre-commit-config.yaml) running ruff, mypy, check-yaml, and trailing-whitespace before every git commit.\n\n## Connected GraphRAG Entities\n\n- `FastAPI_Backend`\n- `UV_Ruff_PreCommit_Toolchain`",
+      "category": "DevOps_MLOps",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_devops_mlops_modern_python_toolchain_uv_package_manager_ruff_li",
+      "entities": [
+        "DevOps_MLOps",
+        "modern_python_toolchain_uv_package_manager_ruff_li",
+        "RAPTOR-L1-DEVOPS-MLOPS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-DEVOPS_MLOPS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "modern_python_toolchain_uv_package_manager_ruff_li.md"
+    },
+    {
+      "chunk_id": "tech_interview_mastery_DOC01",
+      "title": "[English_C1] High-Impact English Idioms and Phrases for FAANG Tech Interviews",
+      "content": "# High-Impact English Idioms and Phrases for FAANG Tech Interviews\n\n## Overview\nEssential natural English idioms, transitions, and phrasing patterns for senior AI/Systems engineering interviews.\n\n## 1. Navigating Trade-Offs & Complexity\n- **\"It's a double-edged sword\"**: When discussing solutions with significant pros and cons (e.g., in-memory caching vs. cache invalidation complexity).\n- **\"At first glance..., but upon closer inspection...\"**: Demonstrates analytical depth rather than jumping to conclusions.\n- **\"Strike the right balance\"**: Used when optimizing between latency, throughput, and consistency.\n\n## 2. Distributed Systems & Architectural Discussion\n- **\"Graceful degradation\"**: Ensuring that under high load, non-critical services fail without crashing the core system.\n- **\"Decouple state from computation\"**: Clean design pattern for scalable distributed microservices and stream processing.\n- **\"Blast radius mitigation\"**: Limiting the failure impact through circuit breakers and partition boundaries.\n\n## 3. Natural Connectors for System Design\n- *\"To walk you through my thought process...\"*\n- *\"Let's establish our baseline constraints before diving into the component design.\"*\n- *\"We can benchmark this against a naive approach to measure real-world performance gains.\"*",
+      "category": "English_C1",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_english_c1_tech_interview_mastery",
+      "entities": [
+        "English_C1",
+        "tech_interview_mastery",
+        "RAPTOR-L1-STANDARDS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-ENGLISH_C1",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "tech_interview_mastery.md"
+    },
+    {
+      "chunk_id": "backend_choice_node_js_express_vs_python_fastapi_a_DOC01",
+      "title": "[FullStack_Web] Backend Choice: Node.js + Express vs. Python FastAPI and OWASP Web Security",
+      "content": "# Backend Choice: Node.js + Express vs. Python FastAPI and OWASP Web Security\n\n**Category**: `fullstack_web` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nBackend selection rule: (1) Choose Node.js + Express for I/O-heavy web gateways, BFF (Backend-For-Frontend), real-time WebSocket servers, session/cookie MVC apps (Project/myapp), or unified JS/TS stacks; Node.js uses the single-threaded non-blocking Libuv Event Loop to handle thousands of concurrent I/O connections. (2) Choose Python FastAPI (ASGI + Uvicorn + Pydantic v2) when the backend executes AI/ML inference (PyTorch, SentenceTransformers), RAG vector search (ChromaDB), or data pipelines (Project/historical-news-search, Project/shortest-link). Mandatory OWASP security: SQL prepared statements, Zod/Pydantic validation, CSP + output escaping (XSS), HttpOnly/SameSite cookies + CSRF tokens, and strict upload MIME whitelisting.\n\n## Connected GraphRAG Entities\n\n- `REST_SSE_WebSockets_API`\n- `NodeJS_Express_Backend`",
+      "category": "FullStack_Web",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_fullstack_web_backend_choice_node_js_express_vs_python_fastapi_a",
+      "entities": [
+        "FullStack_Web",
+        "backend_choice_node_js_express_vs_python_fastapi_a",
+        "RAPTOR-L1-FULLSTACK-WEB"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-FULLSTACK_WEB",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "backend_choice_node_js_express_vs_python_fastapi_a.md"
+    },
+    {
+      "chunk_id": "frontend_architecture_react_component_model_hooks__DOC01",
+      "title": "[FullStack_Web] Frontend Architecture: React Component Model, Hooks, Virtual DOM and Streaming UI",
+      "content": "# Frontend Architecture: React Component Model, Hooks, Virtual DOM and Streaming UI\n\n**Category**: `fullstack_web` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nReact builds declarative UIs where UI = f(state). Key rules: (1) Functional components with Hooks (useState for local state, useEffect for side-effects/API lifecycle with cleanup, useMemo/useCallback to prevent expensive re-renders, useRef for mutable DOM/stream references). (2) Virtual DOM reconciliation diffs component trees in O(N) using unique key props on lists. (3) For AI/LLM Full-Stack apps, connect React to backend streaming endpoints via Fetch ReadableStream or Server-Sent Events (SSE) for real-time token rendering.\n\n## Connected GraphRAG Entities\n\n- `React_Frontend`\n- `REST_SSE_WebSockets_API`",
+      "category": "FullStack_Web",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_fullstack_web_frontend_architecture_react_component_model_hooks_",
+      "entities": [
+        "FullStack_Web",
+        "frontend_architecture_react_component_model_hooks_",
+        "RAPTOR-L1-FULLSTACK-WEB"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-FULLSTACK_WEB",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "frontend_architecture_react_component_model_hooks_.md"
+    },
+    {
+      "chunk_id": "flashattention_gpu_sram_tiling_DOC01",
+      "title": "[LLM_Foundations] FlashAttention GPU SRAM Tiling",
+      "content": "# FlashAttention GPU SRAM Tiling\n\n**Category**: `technical_mastery` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nFlashAttention fuses QK^T, softmax, and V multiplication inside fast on-chip GPU SRAM via online softmax tiling, avoiding O(T^2) HBM reads/writes.\n\n## Connected GraphRAG Entities\n\n- `Self_Attention_QKV`\n- `FlashAttention_SRAM`",
+      "category": "LLM_Foundations",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_llm_foundations_flashattention_gpu_sram_tiling",
+      "entities": [
+        "LLM_Foundations",
+        "flashattention_gpu_sram_tiling",
+        "RAPTOR-L1-LLM-FOUNDATIONS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-LLM_FOUNDATIONS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "flashattention_gpu_sram_tiling.md"
+    },
+    {
+      "chunk_id": "llm_inference_systems_prefill_ttft_vs_decode_tps_k_DOC01",
+      "title": "[LLM_Foundations] LLM Inference Systems: Prefill (TTFT) vs Decode (TPS), KV-Cache & GQA",
+      "content": "# LLM Inference Systems: Prefill (TTFT) vs Decode (TPS), KV-Cache & GQA\n\n**Category**: `llm_foundations` | **Authority Rank**: 5/5 | **Date**: 2026-11-05\n\n## Overview & Key Concepts\n\nPrefill processes all T prompt tokens in parallel (Matrix-Matrix multiplication, Compute-bound, measured by TTFT). Decode generates tokens 1-by-1 auto-regressively (Vector-Matrix multiplication, Memory-Bandwidth bound, measured by TPS). KV-Cache saves past Keys and Values so Decode is O(t) instead of O(t^2), costing VRAM = 2 * L * H_kv * d_h * S * B * P. Grouped-Query Attention (GQA) shares 1 KV head across G Query heads, shrinking KV-Cache by 4x-8x.\n\n## Connected GraphRAG Entities\n\n- `KV_Cache`\n- `Grouped_Query_Attention`\n- `Self_Attention_QKV`",
+      "category": "LLM_Foundations",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_llm_foundations_llm_inference_systems_prefill_ttft_vs_decode_tps_k",
+      "entities": [
+        "LLM_Foundations",
+        "llm_inference_systems_prefill_ttft_vs_decode_tps_k",
+        "RAPTOR-L1-LLM-FOUNDATIONS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-LLM_FOUNDATIONS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "llm_inference_systems_prefill_ttft_vs_decode_tps_k.md"
+    },
+    {
+      "chunk_id": "llm_post-training_fine-tuning_and_serving_rag_vs_l_DOC01",
+      "title": "[LLM_Foundations] LLM Post-Training, Fine-Tuning and Serving: RAG vs. LoRA/QLoRA, DPO, Quantization and vLLM",
+      "content": "# LLM Post-Training, Fine-Tuning and Serving: RAG vs. LoRA/QLoRA, DPO, Quantization and vLLM\n\n**Category**: `llm_foundations` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nDecision Rule (RAG vs. Fine-Tuning): Use RAG when facts change dynamically or require source citations; use Fine-Tuning (SFT + LoRA/QLoRA) when teaching domain tone, strict JSON/tool schemas, or distilling a large model into a fast 7B/8B model. LoRA Math: Freezes pretrained W_0 in R^(d x k) and trains low-rank delta W = W_0 + (alpha/r) * B * A where B in R^(d x r), A in R^(r x k) with rank r << min(d,k) (e.g., r=16), cutting trainable parameters by >99%. QLoRA quantizes W_0 to 4-bit NormalFloat (NF4) with Double Quantization and Paged Optimizers. Alignment uses DPO (Direct Preference Optimization on chosen vs. rejected pairs without a separate Reward Model). Production serving uses vLLM (PagedAttention eliminating KV-Cache fragmentation) + AWQ/FP8 quantization.\n\n## Connected GraphRAG Entities\n\n- `Self_Attention_QKV`\n- `LoRA_QLoRA_vLLM`",
+      "category": "LLM_Foundations",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_llm_foundations_llm_post-training_fine-tuning_and_serving_rag_vs_l",
+      "entities": [
+        "LLM_Foundations",
+        "llm_post-training_fine-tuning_and_serving_rag_vs_l",
+        "RAPTOR-L1-LLM-FOUNDATIONS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-LLM_FOUNDATIONS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "llm_post-training_fine-tuning_and_serving_rag_vs_l.md"
+    },
+    {
+      "chunk_id": "old_misconception_embedding_matrix_w_e_vs_input_x__DOC01",
+      "title": "[LLM_Foundations] [OLD MISCONCEPTION] Embedding Matrix W_E vs Input X & Fact Storage",
+      "content": "# [OLD MISCONCEPTION] Embedding Matrix W_E vs Input X & Fact Storage\n\n**Category**: `llm_foundations` | **Authority Rank**: 1/5 | **Date**: 2026-11-03\n\n## Overview & Key Concepts\n\nOld Note (2026-11-03): I initially thought X in R^(T x d_model) was the entire dictionary W_E (thinking T = V) and that we could search factual company answers directly inside W_E.\n\n## Connected GraphRAG Entities\n\n- `W_E_Dictionary`\n- `Sentence_Matrix_X`\n- `LLM_Architecture`",
+      "category": "LLM_Foundations",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_llm_foundations_old_misconception_embedding_matrix_w_e_vs_input_x_",
+      "entities": [
+        "LLM_Foundations",
+        "old_misconception_embedding_matrix_w_e_vs_input_x_",
+        "RAPTOR-L1-LLM-FOUNDATIONS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-LLM_FOUNDATIONS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "old_misconception_embedding_matrix_w_e_vs_input_x_.md"
+    },
+    {
+      "chunk_id": "validated_mastery_w_e_vs_input_x_self-attention_q__DOC01",
+      "title": "[LLM_Foundations] [VALIDATED MASTERY] W_E vs Input X, Self-Attention (Q,K,V) & FFN World Memory",
+      "content": "# [VALIDATED MASTERY] W_E vs Input X, Self-Attention (Q,K,V) & FFN World Memory\n\n**Category**: `llm_foundations` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nValidated Note (2026-11-06): W_E in R^(V x d_model) is the fixed Vocabulary Dictionary of V=128,256 isolated tokens. When a prompt of length T arrives, we pluck T rows from W_E to build the sentence matrix X in R^(T x d_model). Self-Attention (softmax(QK^T / sqrt(d_k) + M)V) computes token-to-token relationships inside X, while the Feed-Forward Network (FFN, ~75% of parameters) stores general world knowledge learned from pre-training. Private facts live outside the LLM in ChromaDB (RAG) or SQL (MCP).\n\n## Connected GraphRAG Entities\n\n- `W_E_Dictionary`\n- `Sentence_Matrix_X`\n- `Self_Attention_QKV`\n- `FFN_World_Memory`\n- `KV_Cache`",
+      "category": "LLM_Foundations",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_llm_foundations_validated_mastery_w_e_vs_input_x_self-attention_q_",
+      "entities": [
+        "LLM_Foundations",
+        "validated_mastery_w_e_vs_input_x_self-attention_q_",
+        "RAPTOR-L1-LLM-FOUNDATIONS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-LLM_FOUNDATIONS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "validated_mastery_w_e_vs_input_x_self-attention_q_.md"
+    },
+    {
+      "chunk_id": "classical_machine_learning_and_tabular_ai_scikit-l_DOC01",
+      "title": "[Machine_Learning] Classical Machine Learning and Tabular AI: Scikit-Learn, XGBoost, Cross-Validation and Leakage Prevention",
+      "content": "# Classical Machine Learning and Tabular AI: Scikit-Learn, XGBoost, Cross-Validation and Leakage Prevention\n\n**Category**: `machine_learning_core` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nTabular ML Decision Rule (SY09): On structured/tabular datasets (<1M rows), Gradient Boosted Decision Trees (XGBoost, LightGBM, CatBoost) outperform Deep Learning. Core engineering rules: (1) Prevent Data Leakage by fitting StandardScaler, Imputer, and TargetEncoder strictly inside sklearn.pipeline.Pipeline on X_train only during Stratified K-Fold Cross-Validation. (2) Bias-Variance and Regularization: L1 (Lasso) induces sparsity for feature selection; L2 (Ridge) shrinks collinear weights; PCA/SVD projects orthogonal maximum-variance axes. (3) Class Imbalance: Use PR-AUC and F1/F-beta instead of ROC-AUC or accuracy; tune scale_pos_weight and probability thresholds. (4) Explainability: Use SHAP values for global and local feature attribution.\n\n## Connected GraphRAG Entities\n\n- `Classical_ML_XGBoost`\n- `Deep_Learning_PyTorch_UNet`",
+      "category": "Machine_Learning",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_machine_learning_classical_machine_learning_and_tabular_ai_scikit-l",
+      "entities": [
+        "Machine_Learning",
+        "classical_machine_learning_and_tabular_ai_scikit-l",
+        "RAPTOR-L1-SYSTEM-DESIGN"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-MACHINE_LEARNING",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "classical_machine_learning_and_tabular_ai_scikit-l.md"
+    },
+    {
+      "chunk_id": "leak_free_gradient_boosting_DOC01",
+      "title": "[Machine_Learning] Leak-Free Machine Learning Pipeline: HistGradientBoostingRegressor & Out-of-Fold Preprocessing",
       "content": "# Leak-Free Machine Learning Pipeline: HistGradientBoostingRegressor & Out-of-Fold Preprocessing\n\n## Core Principles\n1. **Target Transformation**:\n   In skewed price/valuation regression, apply `y_trans = log1p(y)` prior to fitting. The inverse transform `expm1(y_pred)` recovers true scale while optimizing for relative percentage error (RMSLE).\n\n2. **Preventing Data Leakage**:\n   All imputers, standardizers, and one-hot encoders must be fitted strictly on the training fold within a Scikit-Learn `Pipeline`. Fitting transformers on the full dataset before cross-validation produces optimistic test metric contamination.\n\n3. **HistGradientBoosting vs XGBoost**:\n   `HistGradientBoostingRegressor` discretizes continuous variables into 256 integer bins (histogram-based), reducing computation time from $O(N \\cdot M)$ to $O(\\text{bins} \\cdot M)$ with native support for categorical features and missing values.",
-      "category": "MACHINE_LEARNING",
+      "category": "Machine_Learning",
       "raptor_level": 0,
       "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
       "topic_key": "topic_machine_learning_leak_free_gradient_boosting",
       "entities": [
-        "MACHINE_LEARNING",
-        "DOC_INBOX"
-      ]
+        "Machine_Learning",
+        "leak_free_gradient_boosting",
+        "RAPTOR-L1-SYSTEM-DESIGN"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-MACHINE_LEARNING",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "leak_free_gradient_boosting.md"
     },
     {
-      "chunk_id": "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC01",
-      "title": "[STANDARDS] Engineering Standard: GitHub Repository README Badges & Presentation » Engineering Standard: GitHub Repository README Badges & Presentation",
+      "chunk_id": "corrective_rag_crag_external_search_dynamic_graph__DOC01",
+      "title": "[RAG_Architecture] Corrective RAG (CRAG) External Search & Dynamic Graph Node Ingestion",
+      "content": "# Corrective RAG (CRAG) External Search & Dynamic Graph Node Ingestion\n\n**Category**: `rag_architecture` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nWhen internal ChromaDB retrieval confidence is below threshold, CRAG triggers External Search (Web/ArXiv via Antigravity search_web) and dynamically ingests new Nodes and Edges into the internal GraphRAG Knowledge Graph.\n\n## Connected GraphRAG Entities\n\n- `GraphRAG_Network`\n- `CRAG_External_Search`",
+      "category": "RAG_Architecture",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_rag_architecture_corrective_rag_crag_external_search_dynamic_graph_",
+      "entities": [
+        "RAG_Architecture",
+        "corrective_rag_crag_external_search_dynamic_graph_",
+        "RAPTOR-L1-RAG-ARCHITECTURE"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-RAG_ARCHITECTURE",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "corrective_rag_crag_external_search_dynamic_graph_.md"
+    },
+    {
+      "chunk_id": "production_rag_parent-child_chunking_unit_l2_norma_DOC01",
+      "title": "[RAG_Architecture] Production RAG: Parent-Child Chunking, Unit L2 Normalization, HNSW, BM25+RRF, RAPTOR & GraphRAG",
+      "content": "# Production RAG: Parent-Child Chunking, Unit L2 Normalization, HNSW, BM25+RRF, RAPTOR & GraphRAG\n\n**Category**: `rag_architecture` | **Authority Rank**: 5/5 | **Date**: 2026-11-05\n\n## Overview & Key Concepts\n\nWhen vectors are L2-normalized (||u||=||v||=1), ||u-v||_2^2 = 2(1 - cos(theta)), so Dot Product, Cosine Similarity, and Euclidean L2 produce the exact same ranking (3x faster via Dot Product). ChromaDB uses HNSW (3-layer skip-list graph, O(log N)). Hybrid Search combines Dense Vector + BM25 via Reciprocal Rank Fusion RRF = 1/(60+rank_dense) + 1/(60+rank_bm25), followed by Cross-Encoder re-ranking. For massive datasets: RAPTOR builds a hierarchical summary tree by topic, whereas GraphRAG connects scattered entities across different documents via multi-hop edges.\n\n## Connected GraphRAG Entities\n\n- `ChromaDB_HNSW`\n- `Hybrid_BM25_RRF`\n- `RAPTOR_Tree`\n- `GraphRAG_Network`",
+      "category": "RAG_Architecture",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_rag_architecture_production_rag_parent-child_chunking_unit_l2_norma",
+      "entities": [
+        "RAG_Architecture",
+        "production_rag_parent-child_chunking_unit_l2_norma",
+        "RAPTOR-L1-RAG-ARCHITECTURE"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-RAG_ARCHITECTURE",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "production_rag_parent-child_chunking_unit_l2_norma.md"
+    },
+    {
+      "chunk_id": "github_readme_badge_standard_SEC01",
+      "title": "[Standards] Engineering Standard: GitHub Repository README Badges & Presentation » Engineering Standard: GitHub Repository README Badges & Presentation",
       "content": "# Engineering Standard: GitHub Repository README Badges & Presentation",
-      "category": "STANDARDS",
+      "category": "Standards",
       "raptor_level": 0,
       "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
       "topic_key": "topic_standards_github_readme_badge_standard_sec1",
       "entities": [
-        "STANDARDS",
-        "STANDARDS_GITHUB_README_BADGE_STANDARD"
-      ]
+        "Standards",
+        "github_readme_badge_standard",
+        "RAPTOR-L1-STANDARDS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-STANDARDS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "github_readme_badge_standard.md"
     },
     {
-      "chunk_id": "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC02",
-      "title": "[STANDARDS] Engineering Standard: GitHub Repository README Badges & Presentation » 1. Overview",
+      "chunk_id": "github_readme_badge_standard_SEC02",
+      "title": "[Standards] Engineering Standard: GitHub Repository README Badges & Presentation » 1. Overview",
       "content": "## 1. Overview\nAll repositories and projects authored by **Tran Chung** must follow a consistent, high-impact GitHub README presentation standard. Directly beneath the primary H1 title (`# <Project Name>`), an array of Shields.io badges must be included using the `style=for-the-badge` specification.",
-      "category": "STANDARDS",
+      "category": "Standards",
       "raptor_level": 0,
       "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
       "topic_key": "topic_standards_github_readme_badge_standard_sec2",
       "entities": [
-        "STANDARDS",
-        "STANDARDS_GITHUB_README_BADGE_STANDARD"
-      ]
+        "Standards",
+        "github_readme_badge_standard",
+        "RAPTOR-L1-STANDARDS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-STANDARDS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "github_readme_badge_standard.md"
     },
     {
-      "chunk_id": "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC03",
-      "title": "[STANDARDS] Engineering Standard: GitHub Repository README Badges & Presentation » 2. Core Badge Specifications (Shields.io)",
+      "chunk_id": "github_readme_badge_standard_SEC03",
+      "title": "[Standards] Engineering Standard: GitHub Repository README Badges & Presentation » 2. Core Badge Specifications (Shields.io)",
       "content": "## 2. Core Badge Specifications (Shields.io)",
-      "category": "STANDARDS",
+      "category": "Standards",
       "raptor_level": 0,
       "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
       "topic_key": "topic_standards_github_readme_badge_standard_sec3",
       "entities": [
-        "STANDARDS",
-        "STANDARDS_GITHUB_README_BADGE_STANDARD"
-      ]
+        "Standards",
+        "github_readme_badge_standard",
+        "RAPTOR-L1-STANDARDS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-STANDARDS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "github_readme_badge_standard.md"
     },
     {
-      "chunk_id": "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC04",
-      "title": "[STANDARDS] Engineering Standard: GitHub Repository README Badges & Presentation » Primary Programming Language",
+      "chunk_id": "github_readme_badge_standard_SEC04",
+      "title": "[Standards] Engineering Standard: GitHub Repository README Badges & Presentation » Primary Programming Language",
       "content": "### Primary Programming Language\n- **Python**: `[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)`\n- **TypeScript**: `[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)`\n- **Go**: `[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev/)`\n- **SQL**: `[![SQL](https://img.shields.io/badge/SQL-Advanced-CC292B?style=for-the-badge&logo=sqlite&logoColor=white)](https://www.sqlite.org/)`",
-      "category": "STANDARDS",
+      "category": "Standards",
       "raptor_level": 0,
       "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
       "topic_key": "topic_standards_github_readme_badge_standard_sec4",
       "entities": [
-        "STANDARDS",
-        "STANDARDS_GITHUB_README_BADGE_STANDARD"
-      ]
+        "Standards",
+        "github_readme_badge_standard",
+        "RAPTOR-L1-STANDARDS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-STANDARDS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "github_readme_badge_standard.md"
     },
     {
-      "chunk_id": "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC05",
-      "title": "[STANDARDS] Engineering Standard: GitHub Repository README Badges & Presentation » Backend & Machine Learning Frameworks",
+      "chunk_id": "github_readme_badge_standard_SEC05",
+      "title": "[Standards] Engineering Standard: GitHub Repository README Badges & Presentation » Backend & Machine Learning Frameworks",
       "content": "### Backend & Machine Learning Frameworks\n- **FastAPI**: `[![FastAPI](https://img.shields.io/badge/FastAPI-0.103+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)`\n- **PyTorch**: `[![PyTorch](https://img.shields.io/badge/PyTorch-2.1+-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)`\n- **Scikit-Learn**: `[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.3+-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://scikit-learn.org/)`\n- **OpenCV**: `[![OpenCV](https://img.shields.io/badge/OpenCV-Computer_Vision-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://opencv.org/)`",
-      "category": "STANDARDS",
+      "category": "Standards",
       "raptor_level": 0,
       "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
       "topic_key": "topic_standards_github_readme_badge_standard_sec5",
       "entities": [
-        "STANDARDS",
-        "STANDARDS_GITHUB_README_BADGE_STANDARD"
-      ]
+        "Standards",
+        "github_readme_badge_standard",
+        "RAPTOR-L1-STANDARDS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-STANDARDS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "github_readme_badge_standard.md"
     },
     {
-      "chunk_id": "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC06",
-      "title": "[STANDARDS] Engineering Standard: GitHub Repository README Badges & Presentation » Frontend & UI Tooling",
+      "chunk_id": "github_readme_badge_standard_SEC06",
+      "title": "[Standards] Engineering Standard: GitHub Repository README Badges & Presentation » Frontend & UI Tooling",
       "content": "### Frontend & UI Tooling\n- **React**: `[![React](https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)`\n- **Vite**: `[![Vite](https://img.shields.io/badge/Vite-6.0+-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)`\n- **TailwindCSS**: `[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4+-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)`",
-      "category": "STANDARDS",
+      "category": "Standards",
       "raptor_level": 0,
       "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
       "topic_key": "topic_standards_github_readme_badge_standard_sec6",
       "entities": [
-        "STANDARDS",
-        "STANDARDS_GITHUB_README_BADGE_STANDARD"
-      ]
+        "Standards",
+        "github_readme_badge_standard",
+        "RAPTOR-L1-STANDARDS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-STANDARDS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "github_readme_badge_standard.md"
     },
     {
-      "chunk_id": "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC07",
-      "title": "[STANDARDS] Engineering Standard: GitHub Repository README Badges & Presentation » Vector Stores & Lakehouse Data Platforms",
+      "chunk_id": "github_readme_badge_standard_SEC07",
+      "title": "[Standards] Engineering Standard: GitHub Repository README Badges & Presentation » Vector Stores & Lakehouse Data Platforms",
       "content": "### Vector Stores & Lakehouse Data Platforms\n- **ChromaDB**: `[![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector_Store-FF6F00?style=for-the-badge)](https://www.trychroma.com/)`\n- **SQLite Lakehouse**: `[![SQLite](https://img.shields.io/badge/SQLite-Lakehouse-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://www.sqlite.org/)`\n- **Databricks / Delta Lake**: `[![Delta Lake](https://img.shields.io/badge/Delta_Lake-Medallion-00ADD8?style=for-the-badge)](https://delta.io/)`",
-      "category": "STANDARDS",
+      "category": "Standards",
       "raptor_level": 0,
       "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
       "topic_key": "topic_standards_github_readme_badge_standard_sec7",
       "entities": [
-        "STANDARDS",
-        "STANDARDS_GITHUB_README_BADGE_STANDARD"
-      ]
+        "Standards",
+        "github_readme_badge_standard",
+        "RAPTOR-L1-STANDARDS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-STANDARDS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "github_readme_badge_standard.md"
     },
     {
-      "chunk_id": "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC08",
-      "title": "[STANDARDS] Engineering Standard: GitHub Repository README Badges & Presentation » Code Quality, Linters & Verification",
+      "chunk_id": "github_readme_badge_standard_SEC08",
+      "title": "[Standards] Engineering Standard: GitHub Repository README Badges & Presentation » Code Quality, Linters & Verification",
       "content": "### Code Quality, Linters & Verification\n- **Ruff Linter**: `[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json&style=for-the-badge)](https://github.com/astral-sh/ruff)`\n- **Mypy Strict**: `[![Mypy Strict](https://img.shields.io/badge/Mypy-Strict-blue?style=for-the-badge)](https://mypy-lang.org/)`\n- **Pytest**: `[![Tests](https://img.shields.io/badge/Tests-100%25_Passed-success?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)`",
-      "category": "STANDARDS",
+      "category": "Standards",
       "raptor_level": 0,
       "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
       "topic_key": "topic_standards_github_readme_badge_standard_sec8",
       "entities": [
-        "STANDARDS",
-        "STANDARDS_GITHUB_README_BADGE_STANDARD"
-      ]
+        "Standards",
+        "github_readme_badge_standard",
+        "RAPTOR-L1-STANDARDS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-STANDARDS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "github_readme_badge_standard.md"
     },
     {
-      "chunk_id": "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC09",
-      "title": "[STANDARDS] Engineering Standard: GitHub Repository README Badges & Presentation » 3. Mandatory Layout Pattern",
+      "chunk_id": "github_readme_badge_standard_SEC09",
+      "title": "[Standards] Engineering Standard: GitHub Repository README Badges & Presentation » 3. Mandatory Layout Pattern",
       "content": "## 3. Mandatory Layout Pattern\nWhenever generating or updating a `README.md`, recall this pattern from ChromaDB:\n1. `# Project Name`\n2. Row of 5–10 Shields.io badges matching the project's exact stack.\n3. One-paragraph executive summary of the system architecture.\n4. `## 1. Architectural Highlights`\n5. `## 2. Directory Layout`\n6. `## 3. Quick-Start Guide`",
-      "category": "STANDARDS",
+      "category": "Standards",
       "raptor_level": 0,
       "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
       "topic_key": "topic_standards_github_readme_badge_standard_sec9",
       "entities": [
-        "STANDARDS",
-        "STANDARDS_GITHUB_README_BADGE_STANDARD"
-      ]
+        "Standards",
+        "github_readme_badge_standard",
+        "RAPTOR-L1-STANDARDS"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-STANDARDS",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "github_readme_badge_standard.md"
     },
     {
-      "chunk_id": "RAPTOR-L1-GITHUB_README_BADGE_STANDARD",
-      "title": "[RAPTOR Level-1 Summary] Engineering Standard: GitHub Repository README Badges & Presentation",
-      "content": "RAPTOR Level-1 Abstractive Synthesis for [Engineering Standard: GitHub Repository README Badges & Presentation]: This comprehensive document covers 9 modular sections: Section 1: Engineering Standard: GitHub Repository README Badges & Presentation, Section 2: 1. Overview, Section 3: 2. Core Badge Specifications (Shields.io), Section 4: Primary Programming Language, Section 5: Backend & Machine Learning Frameworks, Section 6: Frontend & UI Tooling, Section 7: Vector Stores & Lakehouse Data Platforms, Section 8: Code Quality, Linters & Verification, Section 9: 3. Mandatory Layout Pattern. Contains 3,597 characters vectorized without truncation across ChromaDB HNSW leaf chunks.",
-      "category": "raptor_summary",
+      "chunk_id": "consistent_hashing_DOC01",
+      "title": "[System_Design] Consistent Hashing with Virtual Nodes in Distributed Systems",
+      "content": "# Consistent Hashing with Virtual Nodes in Distributed Systems\n\n## 1. Problem Formulation\nIn a distributed caching or database system (e.g. Cassandra, DynamoDB, Memcached), traditional modulo hashing $H(key) \\pmod N$ causes massive rehashing ($O(K)$ keys moved) when a node is added or removed, inducing severe cache stampedes.\n\n## 2. Mathematical Definition\nConsistent hashing maps both servers and keys onto a circular hash ring $[0, 2^{32} - 1]$ using a uniform hash function (e.g., MurmurHash3 or SHA-256):\n$$\\text{RingPosition} = H(x) \\pmod{2^{32}}$$\n\nWhen a key $k$ is queried, it moves clockwise until it finds the first node whose position is greater than or equal to $H(k)$:\n$$\\text{AssignedNode}(k) = \\min \\{ n \\in \\text{Nodes} \\mid H(n) \\ge H(k) \\} \\cup \\{\\min(\\text{Nodes})\\}$$\n\n## 3. Virtual Nodes (V-Nodes) for Load Balance\nTo avoid hot spots and non-uniform clustering on the ring, each physical node is replicated as $V$ virtual nodes:\n- Physical server $S_i$ is mapped to $\\{H(S_i \\# 1), H(S_i \\# 2), \\dots, H(S_i \\# V)\\}$.\n- Standard recommendation: $V \\approx 100\\text{--}256$ virtual nodes per physical host.\n- When server $S_i$ crashes, its keys are evenly distributed across all remaining servers rather than overloading a single neighbor.",
+      "category": "System_Design",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_system_design_consistent_hashing",
+      "entities": [
+        "System_Design",
+        "consistent_hashing",
+        "RAPTOR-L1-SYSTEM-DESIGN"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-SYSTEM_DESIGN",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "consistent_hashing.md"
+    },
+    {
+      "chunk_id": "distributed_system_design_and_mlops_llmops_caching_DOC01",
+      "title": "[System_Design] Distributed System Design and MLOps/LLMOps: Caching, Load Balancing, MLflow and Drift Monitoring (Module 08)",
+      "content": "# Distributed System Design and MLOps/LLMOps: Caching, Load Balancing, MLflow and Drift Monitoring (Module 08)\n\n**Category**: `system_design_mlops` | **Authority Rank**: 5/5 | **Date**: 2026-11-06\n\n## Overview & Key Concepts\n\nSystem Design & Production MLOps (AI/Module_08): (1) High Availability & Scaling: L7 Load Balancers, Consistent Hashing, Redis Caching (Cache-Aside with TTL + random jitter to prevent Cache Stampede / Thundering Herd), Database Read Replicas + Sharding, and CAP Theorem trade-offs. (2) Production MLOps & LLMOps: Experiment and model registry via MLflow, Feature Stores for online/offline parity, Statistical Drift Detection (Population Stability Index PSI and Kolmogorov-Smirnov test triggering automated retraining), and LLM Observability (tracing TTFT/TPS latency, token budgets, and online RAGAS faithfulness guardrails).\n\n## Connected GraphRAG Entities\n\n- `Docker_GitLab_CICD`\n- `SystemDesign_Redis_MLflow`",
+      "category": "System_Design",
+      "raptor_level": 0,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_system_design_distributed_system_design_and_mlops_llmops_caching",
+      "entities": [
+        "System_Design",
+        "distributed_system_design_and_mlops_llmops_caching",
+        "RAPTOR-L1-SYSTEM-DESIGN"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-SYSTEM_DESIGN",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "distributed_system_design_and_mlops_llmops_caching.md"
+    },
+    {
+      "chunk_id": "RAPTOR-L1-STANDARDS",
+      "title": "Engineering Standards, GitHub Presentation & English C1",
+      "content": "Standardized repository presentation with Shields.io status badges, professional technical documentation, and C1 Advanced international engineering communication.",
+      "category": "Standards",
       "raptor_level": 1,
       "created_date": "2026-11-08",
       "authority_rank": 5,
       "is_latest": true,
-      "topic_key": "raptor_github_readme_badge_standard",
+      "topic_key": "raptor_raptor-l1-standards",
       "entities": [
-        "STANDARDS",
-        "STANDARDS_GITHUB_README_BADGE_STANDARD"
-      ]
+        "tech_interview_mastery_DOC01",
+        "github_readme_badge_standard_SEC01",
+        "github_readme_badge_standard_SEC02",
+        "github_readme_badge_standard_SEC03",
+        "github_readme_badge_standard_SEC04",
+        "github_readme_badge_standard_SEC05",
+        "github_readme_badge_standard_SEC06",
+        "github_readme_badge_standard_SEC07",
+        "github_readme_badge_standard_SEC08",
+        "github_readme_badge_standard_SEC09"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 9,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L2-GLOBAL-ROOT",
+      "title": "Architectural Knowledge Tree",
+      "content": "Unified hierarchical architecture across Algorithms, Api Architecture, Autonomous Engineering, Computer Vision, Data Engineering, Deep Learning, Devops Mlops, English C1, Fullstack Web, General, Llm Foundations, Machine Learning, Rag Architecture, Reinforcement Learning, Standards, System Design.",
+      "category": "Global_Root",
+      "raptor_level": 2,
+      "created_date": "2026-11-08",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_global_root",
+      "entities": [
+        "RAPTOR-L1-LLM-FOUNDATIONS",
+        "RAPTOR-L1-RAG-ARCHITECTURE",
+        "RAPTOR-L1-DATA-ENGINEERING",
+        "RAPTOR-L1-DEVOPS-MLOPS",
+        "RAPTOR-L1-FULLSTACK-WEB",
+        "RAPTOR-L1-DEEP-LEARNING-CV",
+        "RAPTOR-L1-SYSTEM-DESIGN",
+        "RAPTOR-L1-STANDARDS"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "",
+      "child_count": 16,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-GENERAL",
+      "title": "General Systems",
+      "content": "Comprehensive architectural foundation for General, covering Advanced Fourier and Wavelet Transforms in AI Engineering.",
+      "category": "General",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_general",
+      "entities": [
+        "General"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 1,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-ALGORITHMS",
+      "title": "Algorithms Systems",
+      "content": "Comprehensive architectural foundation for Algorithms, covering External Sorting & K-Way Merge with Min-Heap.",
+      "category": "Algorithms",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_algorithms",
+      "entities": [
+        "Algorithms"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 1,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-API_ARCHITECTURE",
+      "title": "Api Architecture Systems",
+      "content": "Comprehensive architectural foundation for Api Architecture, covering API Protocol Selection Matrix: REST vs. SSE vs. WebSockets vs. gRPC vs. MCP.",
+      "category": "API_Architecture",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_api_architecture",
+      "entities": [
+        "API_Architecture"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 1,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-AUTONOMOUS_ENGINEERING",
+      "title": "Autonomous Engineering Systems",
+      "content": "Comprehensive architectural foundation for Autonomous Engineering, covering Verified KV-Cache Python Utility (`compute_kv_cache_gb`).",
+      "category": "Autonomous_Engineering",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_autonomous_engineering",
+      "entities": [
+        "Autonomous_Engineering"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 1,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-COMPUTER_VISION",
+      "title": "Computer Vision Systems",
+      "content": "Comprehensive architectural foundation for Computer Vision, covering Computer Vision Foundations: 3D CNN Kernels, Spatial Formulas & ResNet Residual Skips.",
+      "category": "Computer_Vision",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_computer_vision",
+      "entities": [
+        "Computer_Vision"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 1,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-DATA_ENGINEERING",
+      "title": "Data Engineering Systems",
+      "content": "Comprehensive architectural foundation for Data Engineering, covering Distributed Streaming Architecture: Apache Kafka Brokers, Partitions, Consumer Groups and Exactly-Once (Module 06), Project: Databricks Smart Mobility Lakehouse & SQL/Python DE Mastery, PySpark Optimization, Kimball Star Schema (SCD Type 2), dbt and Unity Catalog Governance (Module 07 & NF26).",
+      "category": "Data_Engineering",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_data_engineering",
+      "entities": [
+        "Data_Engineering"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 3,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-DEEP_LEARNING",
+      "title": "Deep Learning Systems",
+      "content": "Comprehensive architectural foundation for Deep Learning, covering Deep Learning Architectures and Training: PyTorch, U-Net Segmentation, ResNet/ViT, AdamW and AMP.",
+      "category": "Deep_Learning",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_deep_learning",
+      "entities": [
+        "Deep_Learning"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 1,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-DEVOPS_MLOPS",
+      "title": "Devops Mlops Systems",
+      "content": "Comprehensive architectural foundation for Devops Mlops, covering Containerization and CI/CD: Docker Multi-Stage Builds, Docker Compose and GitLab CI / GitHub Actions, Modern Python Toolchain: uv Package Manager, Ruff Linter/Formatter, Mypy and Pre-Commit.",
+      "category": "DevOps_MLOps",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_devops_mlops",
+      "entities": [
+        "DevOps_MLOps"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 2,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-ENGLISH_C1",
+      "title": "English C1 Systems",
+      "content": "Comprehensive architectural foundation for English C1, covering High-Impact English Idioms and Phrases for FAANG Tech Interviews.",
+      "category": "English_C1",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_english_c1",
+      "entities": [
+        "English_C1"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 1,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-FULLSTACK_WEB",
+      "title": "Fullstack Web Systems",
+      "content": "Comprehensive architectural foundation for Fullstack Web, covering Backend Choice: Node.js + Express vs. Python FastAPI and OWASP Web Security, Frontend Architecture: React Component Model, Hooks, Virtual DOM and Streaming UI.",
+      "category": "FullStack_Web",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_fullstack_web",
+      "entities": [
+        "FullStack_Web"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 2,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-LLM_FOUNDATIONS",
+      "title": "Llm Foundations Systems",
+      "content": "Comprehensive architectural foundation for Llm Foundations, covering FlashAttention GPU SRAM Tiling, LLM Inference Systems: Prefill (TTFT) vs Decode (TPS), KV-Cache & GQA, LLM Post-Training, Fine-Tuning and Serving: RAG vs. LoRA/QLoRA, DPO, Quantization and vLLM, [OLD MISCONCEPTION] Embedding Matrix W_E vs Input X & Fact Storage.",
+      "category": "LLM_Foundations",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_llm_foundations",
+      "entities": [
+        "LLM_Foundations"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 5,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-MACHINE_LEARNING",
+      "title": "Machine Learning Systems",
+      "content": "Comprehensive architectural foundation for Machine Learning, covering Classical Machine Learning and Tabular AI: Scikit-Learn, XGBoost, Cross-Validation and Leakage Prevention, Leak-Free Machine Learning Pipeline: HistGradientBoostingRegressor & Out-of-Fold Preprocessing.",
+      "category": "Machine_Learning",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_machine_learning",
+      "entities": [
+        "Machine_Learning"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 2,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-RAG_ARCHITECTURE",
+      "title": "Rag Architecture Systems",
+      "content": "Comprehensive architectural foundation for Rag Architecture, covering Corrective RAG (CRAG) External Search & Dynamic Graph Node Ingestion, Production RAG: Parent-Child Chunking, Unit L2 Normalization, HNSW, BM25+RRF, RAPTOR & GraphRAG.",
+      "category": "RAG_Architecture",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_rag_architecture",
+      "entities": [
+        "RAG_Architecture"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 2,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "RAPTOR-L1-SYSTEM_DESIGN",
+      "title": "System Design Systems",
+      "content": "Comprehensive architectural foundation for System Design, covering Consistent Hashing with Virtual Nodes in Distributed Systems, Distributed System Design and MLOps/LLMOps: Caching, Load Balancing, MLflow and Drift Monitoring (Module 08).",
+      "category": "System_Design",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_system_design",
+      "entities": [
+        "System_Design"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 2,
+      "file_name": ""
+    },
+    {
+      "chunk_id": "grpo_deepseek_reasoning_rl_DOC01",
+      "title": "[REINFORCEMENT_LEARNING] Group Relative Policy Optimization (GRPO) for LLM Reasoning",
+      "content": "# Group Relative Policy Optimization (GRPO) for LLM Reasoning\n\n**Category**: `Reinforcement_Learning` | **Authority Rank**: 5/5 | **Date**: 2026-11-09\n\n## Overview & Key Concepts\n\nGroup Relative Policy Optimization (GRPO) eliminates the memory-heavy Critic/Value network from standard PPO. Instead of training a separate value model $V_\\phi(s)$ of equal size to the policy, GRPO samples a group of $G$ outputs $\\{o_1, o_2, \\dots, o_G\\}$ for each question $q$, computes rule-based or verifier rewards $\\{r_1, r_2, \\dots, r_G\\}$, and computes the normalized relative advantage:\n\n$$A_i = \\frac{r_i - \\text{mean}(r)}{\\text{std}(r) + \\epsilon}$$\n\nThis cuts training VRAM usage by over 50% while stabilizing mathematical and algorithmic reasoning trajectories (as demonstrated in DeepSeek-R1 and DeepSeekMath).\n\n## Connected GraphRAG Entities\n\n- `GRPO_Algorithm`\n- `PPO_Reinforcement_Learning`\n- `DeepSeek_R1_Reasoning`",
+      "category": "REINFORCEMENT_LEARNING",
+      "raptor_level": 0,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "topic_reinforcement_learning_grpo_deepseek_reasoning_rl",
+      "entities": [
+        "REINFORCEMENT_LEARNING",
+        "grpo_deepseek_reasoning_rl"
+      ],
+      "raptor_parent_l1": "RAPTOR-L1-REINFORCEMENT_LEARNING",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 0,
+      "file_name": "grpo_deepseek_reasoning_rl.md"
+    },
+    {
+      "chunk_id": "RAPTOR-L1-REINFORCEMENT_LEARNING",
+      "title": "Reinforcement Learning Systems",
+      "content": "Comprehensive architectural foundation for Reinforcement Learning, covering Group Relative Policy Optimization (GRPO) for LLM Reasoning.",
+      "category": "REINFORCEMENT_LEARNING",
+      "raptor_level": 1,
+      "created_date": "2026-11-09",
+      "authority_rank": 5,
+      "is_latest": true,
+      "topic_key": "raptor_l1_reinforcement_learning",
+      "entities": [
+        "REINFORCEMENT_LEARNING"
+      ],
+      "raptor_parent_l1": "",
+      "raptor_parent_l2": "RAPTOR-L2-GLOBAL-ROOT",
+      "child_count": 1,
+      "file_name": ""
     }
   ],
   "knowledge_graph": {
-    "W_E_Dictionary": [
-      [
-        "Sentence_Matrix_X",
-        "FEEDS_INTO",
-        "NOTE-LLM-01-VALIDATED"
-      ]
-    ],
-    "Sentence_Matrix_X": [
-      [
-        "W_E_Dictionary",
-        "inverse_FEEDS_INTO",
-        "NOTE-LLM-01-VALIDATED"
-      ],
-      [
-        "Self_Attention_QKV",
-        "PROJECTED_INTO",
-        "NOTE-LLM-01-VALIDATED"
-      ]
-    ],
-    "Self_Attention_QKV": [
-      [
-        "Sentence_Matrix_X",
-        "inverse_PROJECTED_INTO",
-        "NOTE-LLM-01-VALIDATED"
-      ],
-      [
-        "KV_Cache",
-        "CACHED_IN",
-        "NOTE-LLM-02"
-      ],
-      [
-        "FlashAttention_SRAM",
-        "TILED_IN_SRAM_BY",
-        "NOTE-LLM-03"
-      ],
-      [
-        "LoRA_QLoRA_vLLM",
-        "FINE_TUNED_VIA",
-        "NOTE-LLM-04"
-      ]
-    ],
-    "KV_Cache": [
-      [
-        "Self_Attention_QKV",
-        "inverse_CACHED_IN",
-        "NOTE-LLM-02"
-      ],
-      [
-        "Grouped_Query_Attention",
-        "OPTIMIZED_BY",
-        "NOTE-LLM-02"
-      ]
-    ],
-    "Grouped_Query_Attention": [
-      [
-        "KV_Cache",
-        "inverse_OPTIMIZED_BY",
-        "NOTE-LLM-02"
-      ]
-    ],
-    "ChromaDB_HNSW": [
-      [
-        "Hybrid_BM25_RRF",
-        "COMBINED_WITH",
-        "NOTE-RAG-01"
-      ]
-    ],
-    "Hybrid_BM25_RRF": [
-      [
-        "ChromaDB_HNSW",
-        "inverse_COMBINED_WITH",
-        "NOTE-RAG-01"
-      ],
-      [
-        "RAPTOR_Tree",
-        "SCALED_BY",
-        "NOTE-RAG-01"
-      ],
-      [
-        "GraphRAG_Network",
-        "CONNECTED_BY",
-        "NOTE-RAG-01"
-      ]
-    ],
-    "RAPTOR_Tree": [
-      [
-        "Hybrid_BM25_RRF",
-        "inverse_SCALED_BY",
-        "NOTE-RAG-01"
-      ]
-    ],
-    "GraphRAG_Network": [
-      [
-        "Hybrid_BM25_RRF",
-        "inverse_CONNECTED_BY",
-        "NOTE-RAG-01"
-      ],
-      [
-        "CRAG_External_Search",
-        "inverse_SPAWNS_DYNAMIC_NODES_IN",
-        "NOTE-CRAG-01"
-      ]
-    ],
-    "Databricks_Medallion_Lakehouse": [
-      [
-        "Delta_Lake_ACID",
-        "USES_ACID",
-        "NOTE-DE-01"
-      ],
-      [
-        "GitHub_Actions_CICD",
-        "PROTECTED_BY",
-        "NOTE-DE-01"
-      ],
-      [
-        "Apache_Kafka_Streaming",
-        "inverse_INGESTS_INTO",
-        "NOTE-DE-02"
-      ],
-      [
-        "dbt_StarSchema_UnityCatalog",
-        "MODELED_AND_GOVERNED_BY",
-        "NOTE-DE-03"
-      ]
-    ],
-    "Delta_Lake_ACID": [
-      [
-        "Databricks_Medallion_Lakehouse",
-        "inverse_USES_ACID",
-        "NOTE-DE-01"
-      ]
-    ],
-    "GitHub_Actions_CICD": [
-      [
-        "Databricks_Medallion_Lakehouse",
-        "inverse_PROTECTED_BY",
-        "NOTE-DE-01"
-      ],
-      [
-        "MCP_JSON_RPC",
-        "ENFORCES_GATES_FOR",
-        "RAPTOR-L1-GENAI"
-      ]
-    ],
-    "MCP_JSON_RPC": [
-      [
-        "GitHub_Actions_CICD",
-        "inverse_ENFORCES_GATES_FOR",
-        "RAPTOR-L1-GENAI"
-      ]
-    ],
-    "CRAG_External_Search": [
-      [
-        "GraphRAG_Network",
-        "SPAWNS_DYNAMIC_NODES_IN",
-        "NOTE-CRAG-01"
-      ]
-    ],
-    "FlashAttention_SRAM": [
-      [
-        "Self_Attention_QKV",
-        "inverse_TILED_IN_SRAM_BY",
-        "NOTE-LLM-03"
-      ]
-    ],
-    "React_Frontend": [
-      [
-        "REST_SSE_WebSockets_API",
-        "CALLS_API",
-        "NOTE-WEB-01"
-      ]
-    ],
-    "REST_SSE_WebSockets_API": [
-      [
-        "React_Frontend",
-        "inverse_CALLS_API",
-        "NOTE-WEB-01"
-      ],
-      [
-        "NodeJS_Express_Backend",
-        "ROUTED_TO",
-        "NOTE-WEB-02"
-      ],
-      [
-        "FastAPI_Backend",
-        "ROUTED_TO",
-        "NOTE-API-01"
-      ]
-    ],
-    "NodeJS_Express_Backend": [
-      [
-        "REST_SSE_WebSockets_API",
-        "inverse_ROUTED_TO",
-        "NOTE-WEB-02"
-      ],
-      [
-        "Docker_GitLab_CICD",
-        "CONTAINERIZED_IN",
-        "RAPTOR-L1-FULLSTACK-DEVOPS"
-      ]
-    ],
-    "FastAPI_Backend": [
-      [
-        "REST_SSE_WebSockets_API",
-        "inverse_ROUTED_TO",
-        "NOTE-API-01"
-      ],
-      [
-        "UV_Ruff_PreCommit_Toolchain",
-        "MANAGED_BY",
-        "NOTE-DEVOPS-01"
-      ]
-    ],
-    "UV_Ruff_PreCommit_Toolchain": [
-      [
-        "FastAPI_Backend",
-        "inverse_MANAGED_BY",
-        "NOTE-DEVOPS-01"
-      ],
-      [
-        "Docker_GitLab_CICD",
-        "GATES_AND_DEPLOYS_VIA",
-        "NOTE-DEVOPS-02"
-      ]
-    ],
-    "Docker_GitLab_CICD": [
-      [
-        "UV_Ruff_PreCommit_Toolchain",
-        "inverse_GATES_AND_DEPLOYS_VIA",
-        "NOTE-DEVOPS-02"
-      ],
-      [
-        "NodeJS_Express_Backend",
-        "inverse_CONTAINERIZED_IN",
-        "RAPTOR-L1-FULLSTACK-DEVOPS"
-      ],
-      [
-        "SystemDesign_Redis_MLflow",
-        "SCALES_IN_PRODUCTION_VIA",
-        "NOTE-SYS-01"
-      ]
-    ],
-    "Classical_ML_XGBoost": [
-      [
-        "Deep_Learning_PyTorch_UNet",
-        "COMPLEMENTS",
-        "NOTE-ML-01"
-      ]
-    ],
-    "Deep_Learning_PyTorch_UNet": [
-      [
-        "Classical_ML_XGBoost",
-        "inverse_COMPLEMENTS",
-        "NOTE-ML-01"
-      ],
-      [
-        "CNN_ResNet50_Project",
-        "APPLIED_IN",
-        "NOTE-DL-01"
-      ]
-    ],
-    "CNN_ResNet50_Project": [
-      [
-        "Deep_Learning_PyTorch_UNet",
-        "inverse_APPLIED_IN",
-        "NOTE-DL-01"
-      ]
-    ],
-    "LoRA_QLoRA_vLLM": [
-      [
-        "Self_Attention_QKV",
-        "inverse_FINE_TUNED_VIA",
-        "NOTE-LLM-04"
-      ]
-    ],
-    "Apache_Kafka_Streaming": [
-      [
-        "Databricks_Medallion_Lakehouse",
-        "INGESTS_INTO",
-        "NOTE-DE-02"
-      ]
-    ],
-    "dbt_StarSchema_UnityCatalog": [
-      [
-        "Databricks_Medallion_Lakehouse",
-        "inverse_MODELED_AND_GOVERNED_BY",
-        "NOTE-DE-03"
-      ]
-    ],
-    "SystemDesign_Redis_MLflow": [
-      [
-        "Docker_GitLab_CICD",
-        "inverse_SCALES_IN_PRODUCTION_VIA",
-        "NOTE-SYS-01"
-      ]
-    ],
-    "SECOND_BRAIN_ROOT": [
-      [
-        "MLOPS_DEVOPS",
-        "INCLUDES",
-        "DOC-ADVANCED_MATH_TRANSFORMS"
-      ],
-      [
-        "ENGLISH_C1",
-        "INCLUDES",
-        "DOC-ENGLISH_C1-TECH_INTERVIEW_MASTERY"
-      ],
-      [
-        "ALGORITHMS",
-        "INCLUDES",
-        "DOC-ALGORITHMS-K_WAY_MERGE"
-      ],
-      [
-        "SYSTEM_DESIGN",
-        "INCLUDES",
-        "DOC-SYSTEM_DESIGN-CONSISTENT_HASHING"
-      ],
-      [
-        "MACHINE_LEARNING",
-        "INCLUDES",
-        "DOC-MACHINE_LEARNING-LEAK_FREE_GRADIENT_BOOSTING"
-      ],
-      [
-        "STANDARDS",
-        "INCLUDES",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD"
-      ]
-    ],
-    "MLOPS_DEVOPS": [
-      [
-        "SECOND_BRAIN_ROOT",
-        "inverse_INCLUDES",
-        "DOC-ADVANCED_MATH_TRANSFORMS"
-      ],
+    "GENERAL": [
       [
         "ADVANCED_MATH_TRANSFORMS",
-        "HAS_TOPIC",
-        "DOC-ADVANCED_MATH_TRANSFORMS"
+        "DEFINES_DOCUMENT",
+        "advanced_math_transforms_DOC01"
       ]
     ],
     "ADVANCED_MATH_TRANSFORMS": [
       [
-        "MLOPS_DEVOPS",
-        "inverse_HAS_TOPIC",
-        "DOC-ADVANCED_MATH_TRANSFORMS"
-      ]
-    ],
-    "ENGLISH_C1": [
-      [
-        "SECOND_BRAIN_ROOT",
-        "inverse_INCLUDES",
-        "DOC-ENGLISH_C1-TECH_INTERVIEW_MASTERY"
-      ],
-      [
-        "ENGLISH_C1_TECH_INTERVIEW_MASTERY",
-        "HAS_TOPIC",
-        "DOC-ENGLISH_C1-TECH_INTERVIEW_MASTERY"
-      ]
-    ],
-    "ENGLISH_C1_TECH_INTERVIEW_MASTERY": [
-      [
-        "ENGLISH_C1",
-        "inverse_HAS_TOPIC",
-        "DOC-ENGLISH_C1-TECH_INTERVIEW_MASTERY"
+        "GENERAL",
+        "inverse_DEFINES_DOCUMENT",
+        "advanced_math_transforms_DOC01"
       ]
     ],
     "ALGORITHMS": [
       [
-        "SECOND_BRAIN_ROOT",
-        "inverse_INCLUDES",
-        "DOC-ALGORITHMS-K_WAY_MERGE"
-      ],
-      [
-        "ALGORITHMS_K_WAY_MERGE",
-        "HAS_TOPIC",
-        "DOC-ALGORITHMS-K_WAY_MERGE"
+        "K_WAY_MERGE",
+        "DEFINES_DOCUMENT",
+        "k_way_merge_DOC01"
       ]
     ],
-    "ALGORITHMS_K_WAY_MERGE": [
+    "K_WAY_MERGE": [
       [
         "ALGORITHMS",
-        "inverse_HAS_TOPIC",
-        "DOC-ALGORITHMS-K_WAY_MERGE"
+        "inverse_DEFINES_DOCUMENT",
+        "k_way_merge_DOC01"
       ]
     ],
-    "SYSTEM_DESIGN": [
+    "API_ARCHITECTURE": [
       [
-        "SECOND_BRAIN_ROOT",
-        "inverse_INCLUDES",
-        "DOC-SYSTEM_DESIGN-CONSISTENT_HASHING"
+        "API_PROTOCOL_SELECTION_MATRIX_REST_VS_SSE_VS_WEBSO",
+        "DEFINES_DOCUMENT",
+        "api_protocol_selection_matrix_rest_vs_sse_vs_webso_DOC01"
+      ]
+    ],
+    "API_PROTOCOL_SELECTION_MATRIX_REST_VS_SSE_VS_WEBSO": [
+      [
+        "API_ARCHITECTURE",
+        "inverse_DEFINES_DOCUMENT",
+        "api_protocol_selection_matrix_rest_vs_sse_vs_webso_DOC01"
+      ]
+    ],
+    "AUTONOMOUS_ENGINEERING": [
+      [
+        "VERIFIED_KV-CACHE_PYTHON_UTILITY_COMPUTE_KV_CACHE_",
+        "DEFINES_DOCUMENT",
+        "verified_kv-cache_python_utility_compute_kv_cache__DOC01"
+      ]
+    ],
+    "VERIFIED_KV-CACHE_PYTHON_UTILITY_COMPUTE_KV_CACHE_": [
+      [
+        "AUTONOMOUS_ENGINEERING",
+        "inverse_DEFINES_DOCUMENT",
+        "verified_kv-cache_python_utility_compute_kv_cache__DOC01"
+      ]
+    ],
+    "COMPUTER_VISION": [
+      [
+        "COMPUTER_VISION_FOUNDATIONS_3D_CNN_KERNELS_SPATIAL",
+        "DEFINES_DOCUMENT",
+        "computer_vision_foundations_3d_cnn_kernels_spatial_DOC01"
+      ]
+    ],
+    "COMPUTER_VISION_FOUNDATIONS_3D_CNN_KERNELS_SPATIAL": [
+      [
+        "COMPUTER_VISION",
+        "inverse_DEFINES_DOCUMENT",
+        "computer_vision_foundations_3d_cnn_kernels_spatial_DOC01"
+      ]
+    ],
+    "DATA_ENGINEERING": [
+      [
+        "DISTRIBUTED_STREAMING_ARCHITECTURE_APACHE_KAFKA_BR",
+        "DEFINES_DOCUMENT",
+        "distributed_streaming_architecture_apache_kafka_br_DOC01"
       ],
       [
-        "SYSTEM_DESIGN_CONSISTENT_HASHING",
-        "HAS_TOPIC",
-        "DOC-SYSTEM_DESIGN-CONSISTENT_HASHING"
+        "PROJECT_DATABRICKS_SMART_MOBILITY_LAKEHOUSE_SQL_PY",
+        "DEFINES_DOCUMENT",
+        "project_databricks_smart_mobility_lakehouse_sql_py_DOC01"
+      ],
+      [
+        "PYSPARK_OPTIMIZATION_KIMBALL_STAR_SCHEMA_SCD_TYPE_",
+        "DEFINES_DOCUMENT",
+        "pyspark_optimization_kimball_star_schema_scd_type__DOC01"
       ]
     ],
-    "SYSTEM_DESIGN_CONSISTENT_HASHING": [
+    "DISTRIBUTED_STREAMING_ARCHITECTURE_APACHE_KAFKA_BR": [
       [
-        "SYSTEM_DESIGN",
-        "inverse_HAS_TOPIC",
-        "DOC-SYSTEM_DESIGN-CONSISTENT_HASHING"
+        "DATA_ENGINEERING",
+        "inverse_DEFINES_DOCUMENT",
+        "distributed_streaming_architecture_apache_kafka_br_DOC01"
+      ]
+    ],
+    "PROJECT_DATABRICKS_SMART_MOBILITY_LAKEHOUSE_SQL_PY": [
+      [
+        "DATA_ENGINEERING",
+        "inverse_DEFINES_DOCUMENT",
+        "project_databricks_smart_mobility_lakehouse_sql_py_DOC01"
+      ]
+    ],
+    "PYSPARK_OPTIMIZATION_KIMBALL_STAR_SCHEMA_SCD_TYPE_": [
+      [
+        "DATA_ENGINEERING",
+        "inverse_DEFINES_DOCUMENT",
+        "pyspark_optimization_kimball_star_schema_scd_type__DOC01"
+      ]
+    ],
+    "DEEP_LEARNING": [
+      [
+        "DEEP_LEARNING_ARCHITECTURES_AND_TRAINING_PYTORCH_U",
+        "DEFINES_DOCUMENT",
+        "deep_learning_architectures_and_training_pytorch_u_DOC01"
+      ]
+    ],
+    "DEEP_LEARNING_ARCHITECTURES_AND_TRAINING_PYTORCH_U": [
+      [
+        "DEEP_LEARNING",
+        "inverse_DEFINES_DOCUMENT",
+        "deep_learning_architectures_and_training_pytorch_u_DOC01"
+      ]
+    ],
+    "DEVOPS_MLOPS": [
+      [
+        "CONTAINERIZATION_AND_CI_CD_DOCKER_MULTI-STAGE_BUIL",
+        "DEFINES_DOCUMENT",
+        "containerization_and_ci_cd_docker_multi-stage_buil_DOC01"
+      ],
+      [
+        "MODERN_PYTHON_TOOLCHAIN_UV_PACKAGE_MANAGER_RUFF_LI",
+        "DEFINES_DOCUMENT",
+        "modern_python_toolchain_uv_package_manager_ruff_li_DOC01"
+      ]
+    ],
+    "CONTAINERIZATION_AND_CI_CD_DOCKER_MULTI-STAGE_BUIL": [
+      [
+        "DEVOPS_MLOPS",
+        "inverse_DEFINES_DOCUMENT",
+        "containerization_and_ci_cd_docker_multi-stage_buil_DOC01"
+      ]
+    ],
+    "MODERN_PYTHON_TOOLCHAIN_UV_PACKAGE_MANAGER_RUFF_LI": [
+      [
+        "DEVOPS_MLOPS",
+        "inverse_DEFINES_DOCUMENT",
+        "modern_python_toolchain_uv_package_manager_ruff_li_DOC01"
+      ]
+    ],
+    "ENGLISH_C1": [
+      [
+        "TECH_INTERVIEW_MASTERY",
+        "DEFINES_DOCUMENT",
+        "tech_interview_mastery_DOC01"
+      ]
+    ],
+    "TECH_INTERVIEW_MASTERY": [
+      [
+        "ENGLISH_C1",
+        "inverse_DEFINES_DOCUMENT",
+        "tech_interview_mastery_DOC01"
+      ]
+    ],
+    "FULLSTACK_WEB": [
+      [
+        "BACKEND_CHOICE_NODE_JS_EXPRESS_VS_PYTHON_FASTAPI_A",
+        "DEFINES_DOCUMENT",
+        "backend_choice_node_js_express_vs_python_fastapi_a_DOC01"
+      ],
+      [
+        "FRONTEND_ARCHITECTURE_REACT_COMPONENT_MODEL_HOOKS_",
+        "DEFINES_DOCUMENT",
+        "frontend_architecture_react_component_model_hooks__DOC01"
+      ]
+    ],
+    "BACKEND_CHOICE_NODE_JS_EXPRESS_VS_PYTHON_FASTAPI_A": [
+      [
+        "FULLSTACK_WEB",
+        "inverse_DEFINES_DOCUMENT",
+        "backend_choice_node_js_express_vs_python_fastapi_a_DOC01"
+      ]
+    ],
+    "FRONTEND_ARCHITECTURE_REACT_COMPONENT_MODEL_HOOKS_": [
+      [
+        "FULLSTACK_WEB",
+        "inverse_DEFINES_DOCUMENT",
+        "frontend_architecture_react_component_model_hooks__DOC01"
+      ]
+    ],
+    "LLM_FOUNDATIONS": [
+      [
+        "FLASHATTENTION_GPU_SRAM_TILING",
+        "DEFINES_DOCUMENT",
+        "flashattention_gpu_sram_tiling_DOC01"
+      ],
+      [
+        "LLM_INFERENCE_SYSTEMS_PREFILL_TTFT_VS_DECODE_TPS_K",
+        "DEFINES_DOCUMENT",
+        "llm_inference_systems_prefill_ttft_vs_decode_tps_k_DOC01"
+      ],
+      [
+        "LLM_POST-TRAINING_FINE-TUNING_AND_SERVING_RAG_VS_L",
+        "DEFINES_DOCUMENT",
+        "llm_post-training_fine-tuning_and_serving_rag_vs_l_DOC01"
+      ],
+      [
+        "OLD_MISCONCEPTION_EMBEDDING_MATRIX_W_E_VS_INPUT_X_",
+        "DEFINES_DOCUMENT",
+        "old_misconception_embedding_matrix_w_e_vs_input_x__DOC01"
+      ],
+      [
+        "VALIDATED_MASTERY_W_E_VS_INPUT_X_SELF-ATTENTION_Q_",
+        "DEFINES_DOCUMENT",
+        "validated_mastery_w_e_vs_input_x_self-attention_q__DOC01"
+      ]
+    ],
+    "FLASHATTENTION_GPU_SRAM_TILING": [
+      [
+        "LLM_FOUNDATIONS",
+        "inverse_DEFINES_DOCUMENT",
+        "flashattention_gpu_sram_tiling_DOC01"
+      ]
+    ],
+    "LLM_INFERENCE_SYSTEMS_PREFILL_TTFT_VS_DECODE_TPS_K": [
+      [
+        "LLM_FOUNDATIONS",
+        "inverse_DEFINES_DOCUMENT",
+        "llm_inference_systems_prefill_ttft_vs_decode_tps_k_DOC01"
+      ]
+    ],
+    "LLM_POST-TRAINING_FINE-TUNING_AND_SERVING_RAG_VS_L": [
+      [
+        "LLM_FOUNDATIONS",
+        "inverse_DEFINES_DOCUMENT",
+        "llm_post-training_fine-tuning_and_serving_rag_vs_l_DOC01"
+      ]
+    ],
+    "OLD_MISCONCEPTION_EMBEDDING_MATRIX_W_E_VS_INPUT_X_": [
+      [
+        "LLM_FOUNDATIONS",
+        "inverse_DEFINES_DOCUMENT",
+        "old_misconception_embedding_matrix_w_e_vs_input_x__DOC01"
+      ]
+    ],
+    "VALIDATED_MASTERY_W_E_VS_INPUT_X_SELF-ATTENTION_Q_": [
+      [
+        "LLM_FOUNDATIONS",
+        "inverse_DEFINES_DOCUMENT",
+        "validated_mastery_w_e_vs_input_x_self-attention_q__DOC01"
       ]
     ],
     "MACHINE_LEARNING": [
       [
-        "SECOND_BRAIN_ROOT",
-        "inverse_INCLUDES",
-        "DOC-MACHINE_LEARNING-LEAK_FREE_GRADIENT_BOOSTING"
+        "CLASSICAL_MACHINE_LEARNING_AND_TABULAR_AI_SCIKIT-L",
+        "DEFINES_DOCUMENT",
+        "classical_machine_learning_and_tabular_ai_scikit-l_DOC01"
       ],
       [
-        "MACHINE_LEARNING_LEAK_FREE_GRADIENT_BOOSTING",
-        "HAS_TOPIC",
-        "DOC-MACHINE_LEARNING-LEAK_FREE_GRADIENT_BOOSTING"
+        "LEAK_FREE_GRADIENT_BOOSTING",
+        "DEFINES_DOCUMENT",
+        "leak_free_gradient_boosting_DOC01"
       ]
     ],
-    "MACHINE_LEARNING_LEAK_FREE_GRADIENT_BOOSTING": [
+    "CLASSICAL_MACHINE_LEARNING_AND_TABULAR_AI_SCIKIT-L": [
       [
         "MACHINE_LEARNING",
-        "inverse_HAS_TOPIC",
-        "DOC-MACHINE_LEARNING-LEAK_FREE_GRADIENT_BOOSTING"
+        "inverse_DEFINES_DOCUMENT",
+        "classical_machine_learning_and_tabular_ai_scikit-l_DOC01"
+      ]
+    ],
+    "LEAK_FREE_GRADIENT_BOOSTING": [
+      [
+        "MACHINE_LEARNING",
+        "inverse_DEFINES_DOCUMENT",
+        "leak_free_gradient_boosting_DOC01"
+      ]
+    ],
+    "RAG_ARCHITECTURE": [
+      [
+        "CORRECTIVE_RAG_CRAG_EXTERNAL_SEARCH_DYNAMIC_GRAPH_",
+        "DEFINES_DOCUMENT",
+        "corrective_rag_crag_external_search_dynamic_graph__DOC01"
+      ],
+      [
+        "PRODUCTION_RAG_PARENT-CHILD_CHUNKING_UNIT_L2_NORMA",
+        "DEFINES_DOCUMENT",
+        "production_rag_parent-child_chunking_unit_l2_norma_DOC01"
+      ]
+    ],
+    "CORRECTIVE_RAG_CRAG_EXTERNAL_SEARCH_DYNAMIC_GRAPH_": [
+      [
+        "RAG_ARCHITECTURE",
+        "inverse_DEFINES_DOCUMENT",
+        "corrective_rag_crag_external_search_dynamic_graph__DOC01"
+      ]
+    ],
+    "PRODUCTION_RAG_PARENT-CHILD_CHUNKING_UNIT_L2_NORMA": [
+      [
+        "RAG_ARCHITECTURE",
+        "inverse_DEFINES_DOCUMENT",
+        "production_rag_parent-child_chunking_unit_l2_norma_DOC01"
       ]
     ],
     "STANDARDS": [
       [
-        "SECOND_BRAIN_ROOT",
-        "inverse_INCLUDES",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD"
+        "GITHUB_README_BADGE_STANDARD",
+        "DEFINES_DOCUMENT",
+        "github_readme_badge_standard_SEC01"
       ],
       [
         "STANDARDS_GITHUB_README_BADGE_STANDARD",
-        "HAS_TOPIC",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD"
+        "DEFINES_DOCUMENT",
+        "github_readme_badge_standard_DOC"
+      ]
+    ],
+    "GITHUB_README_BADGE_STANDARD": [
+      [
+        "STANDARDS",
+        "inverse_DEFINES_DOCUMENT",
+        "github_readme_badge_standard_SEC01"
+      ]
+    ],
+    "SYSTEM_DESIGN": [
+      [
+        "CONSISTENT_HASHING",
+        "DEFINES_DOCUMENT",
+        "consistent_hashing_DOC01"
+      ],
+      [
+        "DISTRIBUTED_SYSTEM_DESIGN_AND_MLOPS_LLMOPS_CACHING",
+        "DEFINES_DOCUMENT",
+        "distributed_system_design_and_mlops_llmops_caching_DOC01"
+      ]
+    ],
+    "CONSISTENT_HASHING": [
+      [
+        "SYSTEM_DESIGN",
+        "inverse_DEFINES_DOCUMENT",
+        "consistent_hashing_DOC01"
+      ]
+    ],
+    "DISTRIBUTED_SYSTEM_DESIGN_AND_MLOPS_LLMOPS_CACHING": [
+      [
+        "SYSTEM_DESIGN",
+        "inverse_DEFINES_DOCUMENT",
+        "distributed_system_design_and_mlops_llmops_caching_DOC01"
+      ]
+    ],
+    "TRANSFORMER": [
+      [
+        "SELF_ATTENTION_QKV",
+        "COMPUTES",
+        "NOTE-LLM-01"
+      ]
+    ],
+    "SELF_ATTENTION_QKV": [
+      [
+        "TRANSFORMER",
+        "inverse_COMPUTES",
+        "NOTE-LLM-01"
+      ],
+      [
+        "KV_CACHE",
+        "REQUIRES",
+        "NOTE-LLM-02"
+      ]
+    ],
+    "KV_CACHE": [
+      [
+        "SELF_ATTENTION_QKV",
+        "inverse_REQUIRES",
+        "NOTE-LLM-02"
+      ],
+      [
+        "GROUPED_QUERY_ATTENTION",
+        "OPTIMIZED_BY",
+        "NOTE-LLM-02"
+      ],
+      [
+        "FLASHATTENTION",
+        "ACCELERATED_BY",
+        "NOTE-LLM-03"
+      ]
+    ],
+    "GROUPED_QUERY_ATTENTION": [
+      [
+        "KV_CACHE",
+        "inverse_OPTIMIZED_BY",
+        "NOTE-LLM-02"
+      ]
+    ],
+    "FLASHATTENTION": [
+      [
+        "KV_CACHE",
+        "inverse_ACCELERATED_BY",
+        "NOTE-LLM-03"
+      ]
+    ],
+    "CHROMADB": [
+      [
+        "HNSW_COSINE",
+        "INDEXES_WITH",
+        "NOTE-RAG-01"
+      ],
+      [
+        "HYBRID_RAG",
+        "inverse_COMBINES",
+        "NOTE-RAG-01"
+      ]
+    ],
+    "HNSW_COSINE": [
+      [
+        "CHROMADB",
+        "inverse_INDEXES_WITH",
+        "NOTE-RAG-01"
+      ]
+    ],
+    "HYBRID_RAG": [
+      [
+        "CHROMADB",
+        "COMBINES",
+        "NOTE-RAG-01"
+      ],
+      [
+        "RECIPROCAL_RANK_FUSION",
+        "RANKS_WITH",
+        "NOTE-RAG-01"
+      ]
+    ],
+    "RECIPROCAL_RANK_FUSION": [
+      [
+        "HYBRID_RAG",
+        "inverse_RANKS_WITH",
+        "NOTE-RAG-01"
+      ]
+    ],
+    "DATABRICKS_LAKEHOUSE": [
+      [
+        "MEDALLION_ARCHITECTURE",
+        "APPLIES",
+        "NOTE-DE-01"
+      ]
+    ],
+    "MEDALLION_ARCHITECTURE": [
+      [
+        "DATABRICKS_LAKEHOUSE",
+        "inverse_APPLIES",
+        "NOTE-DE-01"
+      ]
+    ],
+    "DELTA_LAKE": [
+      [
+        "ACID_MERGE",
+        "PERFORMS_CDC_WITH",
+        "NOTE-DE-01"
+      ],
+      [
+        "KAFKA_STREAMING",
+        "inverse_INGESTS_INTO",
+        "NOTE-DE-02"
+      ]
+    ],
+    "ACID_MERGE": [
+      [
+        "DELTA_LAKE",
+        "inverse_PERFORMS_CDC_WITH",
+        "NOTE-DE-01"
+      ]
+    ],
+    "KAFKA_STREAMING": [
+      [
+        "DELTA_LAKE",
+        "INGESTS_INTO",
+        "NOTE-DE-02"
+      ]
+    ],
+    "PYSPARK": [
+      [
+        "KIMBALL_STAR_SCHEMA",
+        "TRANSFORMS",
+        "NOTE-DE-03"
+      ]
+    ],
+    "KIMBALL_STAR_SCHEMA": [
+      [
+        "PYSPARK",
+        "inverse_TRANSFORMS",
+        "NOTE-DE-03"
+      ]
+    ],
+    "DOCKER": [
+      [
+        "GITHUB_ACTIONS_CICD",
+        "DEPLOYED_VIA",
+        "NOTE-DEVOPS-02"
+      ]
+    ],
+    "GITHUB_ACTIONS_CICD": [
+      [
+        "DOCKER",
+        "inverse_DEPLOYED_VIA",
+        "NOTE-DEVOPS-02"
+      ]
+    ],
+    "FASTAPI": [
+      [
+        "REACT_SPA",
+        "SERVES_CLIENT",
+        "NOTE-WEB-02"
+      ]
+    ],
+    "REACT_SPA": [
+      [
+        "FASTAPI",
+        "inverse_SERVES_CLIENT",
+        "NOTE-WEB-02"
+      ],
+      [
+        "TAILWINDCSS",
+        "STYLED_WITH",
+        "NOTE-WEB-01"
+      ]
+    ],
+    "TAILWINDCSS": [
+      [
+        "REACT_SPA",
+        "inverse_STYLED_WITH",
+        "NOTE-WEB-01"
       ]
     ],
     "STANDARDS_GITHUB_README_BADGE_STANDARD": [
       [
         "STANDARDS",
-        "inverse_HAS_TOPIC",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD"
-      ],
-      [
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC01",
-        "HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC01"
-      ],
-      [
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC02",
-        "HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC02"
-      ],
-      [
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC03",
-        "HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC03"
-      ],
-      [
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC04",
-        "HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC04"
-      ],
-      [
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC05",
-        "HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC05"
-      ],
-      [
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC06",
-        "HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC06"
-      ],
-      [
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC07",
-        "HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC07"
-      ],
-      [
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC08",
-        "HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC08"
-      ],
-      [
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC09",
-        "HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC09"
+        "inverse_DEFINES_DOCUMENT",
+        "github_readme_badge_standard_DOC"
       ]
     ],
-    "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC01": [
+    "REINFORCEMENT_LEARNING": [
       [
-        "STANDARDS_GITHUB_README_BADGE_STANDARD",
-        "inverse_HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC01"
+        "REINFORCEMENT_LEARNING_GRPO_DEEPSEEK_REASONING_RL",
+        "DEFINES_DOCUMENT",
+        "grpo_deepseek_reasoning_rl_DOC01"
       ]
     ],
-    "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC02": [
+    "REINFORCEMENT_LEARNING_GRPO_DEEPSEEK_REASONING_RL": [
       [
-        "STANDARDS_GITHUB_README_BADGE_STANDARD",
-        "inverse_HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC02"
-      ]
-    ],
-    "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC03": [
-      [
-        "STANDARDS_GITHUB_README_BADGE_STANDARD",
-        "inverse_HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC03"
-      ]
-    ],
-    "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC04": [
-      [
-        "STANDARDS_GITHUB_README_BADGE_STANDARD",
-        "inverse_HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC04"
-      ]
-    ],
-    "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC05": [
-      [
-        "STANDARDS_GITHUB_README_BADGE_STANDARD",
-        "inverse_HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC05"
-      ]
-    ],
-    "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC06": [
-      [
-        "STANDARDS_GITHUB_README_BADGE_STANDARD",
-        "inverse_HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC06"
-      ]
-    ],
-    "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC07": [
-      [
-        "STANDARDS_GITHUB_README_BADGE_STANDARD",
-        "inverse_HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC07"
-      ]
-    ],
-    "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC08": [
-      [
-        "STANDARDS_GITHUB_README_BADGE_STANDARD",
-        "inverse_HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC08"
-      ]
-    ],
-    "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC09": [
-      [
-        "STANDARDS_GITHUB_README_BADGE_STANDARD",
-        "inverse_HAS_SECTION",
-        "DOC-STANDARDS-GITHUB_README_BADGE_STANDARD-SEC09"
-      ]
-    ],
-    "RAPTOR-L2-SECOND-BRAIN": [
-      [
-        "RAPTOR-L1-GITHUB_README_BADGE_STANDARD",
-        "SUMMARIZES_DOCUMENT",
-        "RAPTOR-L1-GITHUB_README_BADGE_STANDARD"
-      ]
-    ],
-    "RAPTOR-L1-GITHUB_README_BADGE_STANDARD": [
-      [
-        "RAPTOR-L2-SECOND-BRAIN",
-        "inverse_SUMMARIZES_DOCUMENT",
-        "RAPTOR-L1-GITHUB_README_BADGE_STANDARD"
+        "REINFORCEMENT_LEARNING",
+        "inverse_DEFINES_DOCUMENT",
+        "grpo_deepseek_reasoning_rl_DOC01"
       ]
     ]
   }
