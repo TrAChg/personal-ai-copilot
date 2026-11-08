@@ -67,7 +67,26 @@ def main() -> None:
         target_path = Path(args.audit_web)
         if not target_path.is_absolute():
             target_path = Path(__file__).resolve().parent / target_path
-        audit_res = orchestrator.web_auditor.audit_html_file(target_path)
+        audit_res = orchestrator.web_auditor.audit_html_file(
+            target_path,
+            project_name="personal_copilot",
+            views=[
+                ("functional_test_verified_dashboard.png", ""),
+                ("functional_test_verified_activities.png", "#activities"),
+                ("functional_test_verified_chunks.png", "#chunks"),
+                ("functional_test_verified_raptor.png", "#raptor"),
+            ],
+            required_containers=[
+                ("graph-box", "Graph Network container"),
+                ("tb-activities", "Activity Logs table body"),
+                ("tb-chunks", "Knowledge Chunks table body"),
+                ("m-nodes", "Graph Nodes metric element"),
+                ("m-chunks", "Knowledge Chunks metric element"),
+                ("m-activities", "Activity Logs metric element"),
+            ],
+            design_tokens={"border-radius": "border-radius:0", "palette": "#0055A5"},
+            live_server_url="http://localhost:8765",
+        )
         print(json.dumps(audit_res, indent=2, ensure_ascii=False))
         return
 

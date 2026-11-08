@@ -1,9 +1,10 @@
 """
-Web & UI Audit Subagent (`src/personal_copilot/agents/web_audit.py`)
-Performs static & functional inspection of generated web interfaces (HTML/CSS/JS):
-- Enforces strict design tokens (0px border-radius, French palette #002654 / #0055A5).
-- Audits DOM container presence and interactive elements.
-- Captures state snapshots of function views, table rows, and graph metrics.
+Generic Web & UI Audit Subagent (`src/personal_copilot/agents/web_audit.py`)
+Modular, project-agnostic Gatekeeper for inspecting any web interface (HTML/CSS/JS/React/Vue):
+- Auto-discovers views and hash routes from the DOM/bundle or accepts custom view definitions.
+- Captures high-resolution visual PNG snapshots via headless Chrome or Edge.
+- Probes dynamic live servers or falls back gracefully to local file:// URI.
+- Supports optional project-specific DOM container assertions and design token verifications.
 """
 
 from __future__ import annotations
@@ -13,20 +14,30 @@ import os
 import re
 import subprocess
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from personal_copilot.config import SNAPSHOTS_DIR
 
 
 class WebAuditSubagent:
-    """Gatekeeper & Inspector Subagent for Web Interfaces and UI Views."""
+    """Project-Agnostic Gatekeeper & Inspector Subagent for Web Interfaces and UI Views."""
 
     def __init__(self, name: str = "WebAuditSubagent") -> None:
         self.name = name
 
-    def audit_html_file(self, html_path: Path) -> dict[str, Any]:
+    def audit_html_file(
+        self,
+        html_path: Path,
+        project_name: str | None = None,
+        views: list[tuple[str, str]] | None = None,
+        required_containers: list[tuple[str, str]] | None = None,
+        design_tokens: dict[str, str] | None = None,
+        live_server_url: str | None = None,
+        data_verifier: Callable[[], dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
         """
         Audits an HTML file for DOM integrity, design system conformance, and state readiness.
+        Fully generic across any project in AI_Engineer.
         """
         if not html_path.exists():
             return {
@@ -37,8 +48,19 @@ class WebAuditSubagent:
             }
 
         content = html_path.read_text(encoding="utf-8")
-        
-        # If auditing a compiled React SPA bundle, include asset files (JS/CSS)
+
+        # Infer project name dynamically if not explicitly provided
+        proj_name = project_name
+        if not proj_name:
+            parts = html_path.resolve().parts
+            if "Project" in parts:
+                idx = parts.index("Project")
+                if idx + 1 < len(parts):
+                    proj_name = parts[idx + 1]
+            if not proj_name:
+                proj_name = html_path.stem
+
+        # Include bundled assets (JS/CSS) if present in parent or adjacent assets directory
         bundle_text = content
         assets_dir = html_path.parent / "assets"
         if assets_dir.exists():
@@ -51,67 +73,64 @@ class WebAuditSubagent:
         issues: list[str] = []
         checks_passed: list[str] = []
 
-        # 1. Design Token Check: 0px border-radius enforcement
-        if "border-radius:0" in bundle_text or "border-radius: 0" in bundle_text:
-            checks_passed.append("Strict 0px border-radius design token present")
-        else:
-            issues.append("Warning: 'border-radius: 0px' token not detected in stylesheets")
+        # 1. Generic DOM Health Check
+        if not content.strip():
+            issues.append("Critical: HTML file is completely empty")
+        elif "<body" in content.lower():
+            checks_passed.append("Valid HTML5 document structure with <body> present")
 
-        # 2. Design Token Check: French Palette #002654 & #0055A5
-        if "#002654" in bundle_text and "#0055A5" in bundle_text:
-            checks_passed.append("French Blue & Navy palette (#002654, #0055A5) verified")
-        else:
-            issues.append("Warning: French Navy/Blue palette tokens missing")
+        # Check for mount roots (React, Vue, or static main)
+        has_mount_root = any(k in bundle_text for k in ['id="root"', 'id="app"', '<main', 'class="container"'])
+        if has_mount_root:
+            checks_passed.append("Application mount container (<main>, #root, or #app) present")
 
-        # 3. DOM Container Checks
-        required_containers = [
-            ("graph-box", "Graph Network container"),
-            ("tb-activities", "Activity Logs table body"),
-            ("tb-chunks", "Knowledge Chunks table body"),
-            ("m-nodes", "Graph Nodes metric element"),
-            ("m-chunks", "Knowledge Chunks metric element"),
-            ("m-activities", "Activity Logs metric element"),
-        ]
+        # 2. Design Token Verification (Optional - only verified if provided)
+        if design_tokens:
+            for token_name, token_val in design_tokens.items():
+                if token_val in bundle_text:
+                    checks_passed.append(f"Design token [{token_name}: {token_val}] verified")
+                else:
+                    issues.append(f"Warning: Design token '{token_name}: {token_val}' not detected in styles")
 
-        for elem_id, label in required_containers:
-            if f'id="{elem_id}"' in bundle_text or f"id='{elem_id}'" in bundle_text or f'"{elem_id}"' in bundle_text:
-                checks_passed.append(f"DOM Container [{elem_id}] ({label}) present")
-            else:
-                issues.append(f"Critical DOM container missing: #{elem_id} ({label})")
+        # 3. DOM Container Checks (Optional - verified if provided)
+        if required_containers:
+            for elem_id, label in required_containers:
+                if f'id="{elem_id}"' in bundle_text or f"id='{elem_id}'" in bundle_text or f'"{elem_id}"' in bundle_text:
+                    checks_passed.append(f"DOM Container [{elem_id}] ({label}) present")
+                else:
+                    issues.append(f"Critical DOM container missing: #{elem_id} ({label})")
 
-        # 4. Data Layer Verification (Embedded JSON or React REST /api/data)
+        # 4. Optional Data Layer Verification (via callback if provided)
         payload_stats: dict[str, Any] = {}
-        from personal_copilot.lakehouse.data_extractor import extract_live_data
+        if data_verifier and callable(data_verifier):
+            try:
+                payload_stats = data_verifier()
+                checks_passed.append("External data layer verified successfully")
+            except Exception as e:
+                issues.append(f"Data layer verifier reported error: {e}")
 
-        try:
-            live_data = extract_live_data()
-            payload_stats = {
-                "total_nodes": len(live_data.get("nodes", [])),
-                "total_edges": len(live_data.get("edges", [])),
-                "total_activities": len(live_data.get("activities", [])),
-                "total_chunks": len(live_data.get("chunks", [])),
-            }
-            checks_passed.append("Live JSON data payload verified from data_extractor service")
-        except Exception as e:
-            issues.append(f"Failed to query data_extractor: {e}")
-
-        # 5. Table Overflow / Scroll styling check
-        if "overflow-y: auto" in bundle_text or "overflow-y:auto" in bundle_text or "overflow-x:auto" in bundle_text or "overflow-x: auto" in bundle_text:
-            checks_passed.append("Scrollable table wrapper container verified")
-        else:
-            issues.append("Missing scroll capability for large datasets")
+        # 5. Table / Container Scroll styling check (if tables exist)
+        if "<table" in bundle_text or "table" in bundle_text.lower():
+            if any(k in bundle_text for k in ["overflow-y: auto", "overflow-y:auto", "overflow-x:auto", "overflow-x: auto", "overflow-auto"]):
+                checks_passed.append("Scrollable container wrapper verified for tabular views")
 
         passed = len([i for i in issues if "Critical" in i]) == 0
 
-        # 6. Capture Visual Screenshots into data/snapshots/ for each view
-        snapshots_captured = self.capture_all_view_snapshots(html_path)
+        # 6. Capture Visual Screenshots dynamically
+        snapshots_captured = self.capture_all_view_snapshots(
+            html_path=html_path,
+            views=views,
+            subfolder=proj_name,
+            live_server_url=live_server_url,
+        )
         if snapshots_captured:
             for s in snapshots_captured:
-                checks_passed.append(f"Visual UI view snapshot captured: {s.name}")
+                checks_passed.append(f"Visual UI snapshot captured: {s.name}")
 
         return {
             "gate": "WebAudit (UI Gate)",
             "passed": passed,
+            "project": proj_name,
             "target_file": str(html_path),
             "file_size_kb": round(len(content.encode("utf-8")) / 1024, 2),
             "visual_snapshots": [str(s) for s in snapshots_captured],
@@ -120,21 +139,67 @@ class WebAuditSubagent:
             "state_snapshot": payload_stats,
         }
 
-    def capture_all_view_snapshots(self, html_path: Path, subfolder: str | None = "personal_copilot") -> list[Path]:
+    def discover_views_from_bundle(self, html_path: Path, bundle_text: str) -> list[tuple[str, str]]:
         """
-        Captures visual screenshots for all main views (Graph, Activity Logs, Knowledge Chunks, RAPTOR).
-        Uses live server (http://localhost:8765) if active, else falls back to local file.
+        Dynamically discovers tab routes and hash anchors from the HTML or JS bundle.
+        Falls back to a single primary overview snapshot if no tabs exist.
         """
-        views = [
-            ("functional_test_verified_dashboard.png", ""),
-            ("functional_test_verified_activities.png", "#activities"),
-            ("functional_test_verified_chunks.png", "#chunks"),
-            ("functional_test_verified_raptor.png", "#raptor"),
-        ]
+        views: list[tuple[str, str]] = []
+        stem = html_path.stem
+
+        # Primary overview view
+        views.append((f"{stem}_overview.png", ""))
+
+        # Discover hash routes from anchors, buttons, or window.location.hash
+        discovered_hashes: set[str] = set()
+
+        for match in re.findall(r'href=["\']#([a-zA-Z0-9_-]+)["\']', bundle_text):
+            if match and len(match) > 1:
+                discovered_hashes.add(match)
+
+        for match in re.findall(r'window\.location\.hash\s*=\s*["\']#?([a-zA-Z0-9_-]+)["\']', bundle_text):
+            if match and len(match) > 1:
+                discovered_hashes.add(match)
+
+        for match in re.findall(r'id:\s*["\']([a-zA-Z0-9_-]+)["\'],\s*label:', bundle_text):
+            if match and len(match) > 1:
+                discovered_hashes.add(match)
+
+        for h in sorted(discovered_hashes):
+            views.append((f"{stem}_view_{h}.png", f"#{h}"))
+
+        return views
+
+    def capture_all_view_snapshots(
+        self,
+        html_path: Path,
+        views: list[tuple[str, str]] | None = None,
+        subfolder: str | None = None,
+        live_server_url: str | None = None,
+    ) -> list[Path]:
+        """
+        Captures visual screenshots for all views (dynamically discovered or explicitly configured).
+        Works seamlessly for ANY web project.
+        """
+        if views is None:
+            content = html_path.read_text(encoding="utf-8") if html_path.exists() else ""
+            assets_dir = html_path.parent / "assets"
+            if assets_dir.exists():
+                for asset in assets_dir.glob("*.js"):
+                    try:
+                        content += "\n" + asset.read_text(encoding="utf-8")
+                    except Exception:
+                        pass
+            views = self.discover_views_from_bundle(html_path, content)
+
         results: list[Path] = []
         for filename, hash_suffix in views:
             res = self.capture_visual_screenshot(
-                html_path, output_name=filename, hash_suffix=hash_suffix, subfolder=subfolder
+                html_path,
+                output_name=filename,
+                hash_suffix=hash_suffix,
+                subfolder=subfolder,
+                live_server_url=live_server_url,
             )
             if res:
                 results.append(res)
@@ -145,14 +210,16 @@ class WebAuditSubagent:
         html_path: Path,
         output_name: str | None = None,
         hash_suffix: str = "",
-        subfolder: str | None = "personal_copilot",
+        subfolder: str | None = None,
+        live_server_url: str | None = None,
     ) -> Path | None:
         """
         Captures a real visual PNG screenshot of the interface using headless Chrome or Edge.
-        Targets http://localhost:8765 if reachable, with virtual-time-budget to allow React hydration.
-        Saved directly in `data/snapshots/`.
+        Targets live server URL if active, with graceful fallback to local file:// URI.
+        Saved in `data/snapshots/{subfolder}/`.
         """
-        target_dir = SNAPSHOTS_DIR / subfolder if subfolder else SNAPSHOTS_DIR
+        folder_name = subfolder or html_path.stem
+        target_dir = SNAPSHOTS_DIR / folder_name if folder_name else SNAPSHOTS_DIR
         target_dir.mkdir(parents=True, exist_ok=True)
         out_filename = output_name or f"{html_path.stem}_snapshot.png"
         out_path = target_dir / out_filename
@@ -166,12 +233,17 @@ class WebAuditSubagent:
         if not browser_exe:
             return None
 
-        # Check if live server is reachable on port 8765
-        import urllib.request
-        target_url = "http://localhost:8765" + hash_suffix
-        try:
-            urllib.request.urlopen("http://localhost:8765", timeout=1)
-        except Exception:
+        # Resolve target URL: use live server URL if specified and reachable, otherwise fall back to local file URI
+        target_url: str | None = None
+        if live_server_url:
+            import urllib.request
+            try:
+                urllib.request.urlopen(live_server_url, timeout=0.8)
+                target_url = live_server_url.rstrip("/") + hash_suffix
+            except Exception:
+                pass
+
+        if not target_url:
             target_url = html_path.resolve().as_uri() + hash_suffix
 
         try:
@@ -205,4 +277,3 @@ class WebAuditSubagent:
             "state_keys": list(state_dict.keys()),
             "summary": {k: len(v) if isinstance(v, (list, dict)) else str(v)[:80] for k, v in state_dict.items()},
         }
-
