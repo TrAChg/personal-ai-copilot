@@ -1,0 +1,37 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# Linter and test caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Virtual environment
+.venv/
+env/
+venv/
+ENV/
+
+# Node.js dependencies
+frontend/node_modules/
+node_modules/
+.npm
+npm-debug.log*
+
+# Environment and secrets
+.env
+*.env
+*.pem
+*.key
+
+# IDE and OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
